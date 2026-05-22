@@ -18,14 +18,13 @@
       await liff.init({ liffId: LIFF_ID });      
                     /*LINEアプリ内で動作するWebアプリ（LIFFアプリ）を起動するための最も重要な初期化処理*/
       　            /*init=initialize（イニシャライズ）*/
-      if (!liff.isLoggedIn()) {
+      if (!liff.isLoggedIn()) {     /*ユーザーがLINEアカウントにログインしていない場合*/
         liff.login();
-        return;
+        return;       /*処理を終了し、その結果（戻り値）を呼び出し元に返す*/
       }
 
-      const profile = await liff.getProfile();
-      const userId = profile.userId;
-
+      const profile = await liff.getProfile();  /*現在アクセスしているLINEユーザーのプロフィール情報（名前、アイコン画像、ユーザーIDなど）を取得するためのコード*/
+      const userId = profile.userId;           /*取得したユーザーのプロフィール情報（profile）の中から、個人の識別番号であるユーザーID（userId）を取り出し、再代入できない変数（userId）に保存する*/
       // GAS に userId を送信
       const url = GAS_URL + "?userId=" + encodeURIComponent(userId);
 
