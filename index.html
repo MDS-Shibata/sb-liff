@@ -27,7 +27,10 @@
       const userId = profile.userId;           /*取得したユーザーのプロフィール情報（profile）の中から、個人の識別番号であるユーザーID（userId）を取り出し、再代入できない変数（userId）に保存する*/
       // GAS に userId を送信
       const url = GAS_URL + "?userId=" + encodeURIComponent(userId);
-
+                                       /*encodeURIComponent(userId): userId に含まれるかもしれない特殊文字（ ? や & や / など）を
+                                             URLでエラーにならない文字列に変換（エンコード）して安全に結合しています。
+                                             これにより、例えば userId が user_001 であれば、"GAS_URL?userId=user_001" というURLが完成します。
+                                             このURLを使ってデータをリクエストすることで、GAS側でどのユーザーからのアクセスかを判別できるようになります。*/
       const res = await fetch(url);
       const data = await res.json();
 
