@@ -1,9 +1,9 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>スクールバス予約</title>
+<!DOCTYPE html>         
+<html lang="ja">       
+<head>                  
+  <meta charset="UTF-8"> 
+  <title>SB予約</title>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 
   <style>
     body {
@@ -58,31 +58,42 @@
     <p>読み込み中です…</p>
   </div>
 
-  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script>
     const LIFF_ID = "2010140886-GXbWv0ge";
     const GAS_URL = "https://script.google.com/macros/s/AKfycby4ZPyq7Sc51WNAqZEKknwW0U4dBuWjYEAZTtQYJd8lQiBwTlxinWamPJMeDBPw-Sr-/exec";
 
-    // 即時実行関数
-    (async () => {
+    async function main() {
 
-      // ローディング表示
+      // ★ ローディング表示（ここで初めて表示される）
       document.getElementById("loading").style.display = "block";
 
       // LIFF 初期化
       await liff.init({ liffId: LIFF_ID });
 
+      if (!liff.isLoggedIn()) {
+        liff.login();
+        return;
+      }
+
       // プロフィール取得
       const profile = await liff.getProfile();
       const userId = profile.userId;
 
-      // GAS の doGet へ遷移（プリフィル）
-      const url = `${GAS_URL}?userId=${encodeURIComponent(userId)}`;
-      window.location.href = url;
+      // GAS に userId を送信
+      const url = GAS_URL + "?userId=" + encodeURIComponent(userId);
+      const res = await fetch(url);
+      const data = await res.json();
 
-    })();
+      if (data.prefillUrl) {
+        location.href = data.prefillUrl;
+      } else {
+        alert("URL取得に失敗しました");
+      }
+    }
+
+    main();
   </script>
-
 </body>
 </html>
+
 
