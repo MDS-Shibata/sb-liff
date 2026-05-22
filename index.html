@@ -61,36 +61,60 @@
     <p>読み込み中です…</p>
   </div>
 
-  <script>
-    const LIFF_ID = "2010140886-GXbWv0ge";
+  <script>     /*コンピュータに特定の処理を実行させるための「簡易的なプログラム」や「命令を記述したテキストファイル*/
+
+    const LIFF_ID = "2010140886-GXbWv0ge";   /*const⇒constant（定数・不変）」に由来するプログラミング用語です。一度設定した値を後から変更（再代入）できない変数*/
+
     const GAS_URL = "https://script.google.com/macros/s/AKfycby4ZPyq7Sc51WNAqZEKknwW0U4dBuWjYEAZTtQYJd8lQiBwTlxinWamPJMeDBPw-Sr-/exec";
 
     async function main() {
+ /*JavaScript（またはTypeScript）で非同期処理（await）を伴う一連のプログラムを、一番最初の開始点（メイン関数）として実行するための関数定義*/
 
       // ★ ローディング表示（ここで初めて表示される）
       document.getElementById("loading").style.display = "block";
 
       // LIFF 初期化
-      await liff.init({ liffId: LIFF_ID });
+      await liff.init({ liffId: LIFF_ID });    /*init=initialize（イニシャライズ）*/
+  /*LINEアプリ内で動作するWebアプリ（LIFFアプリ）を起動するための最も重要な初期化処理*/
 
-      if (!liff.isLoggedIn()) {
+      if (!liff.isLoggedIn()) {     /*ユーザーがLINEアカウントにログインしていない場合*/
+
         liff.login();
-        return;
+        return;     /*処理を終了し、その結果（戻り値）を呼び出し元に返す*/
+
       }
 
       // プロフィール取得
-      const profile = await liff.getProfile();
-      const userId = profile.userId;
+      const profile = await liff.getProfile();   /*現在アクセスしているLINEユーザーのプロフィール情報（名前、アイコン画像、ユーザーIDなど）を取得するためのコード*/
+
+      const userId = profile.userId;   /*取得したユーザーのプロフィール情報（profile）の中から、個人の識別番号であるユーザーID（userId）を取り出し、再代入できない変数（userId）に保存する*/
+
 
       // GAS に userId を送信
-      const url = GAS_URL + "?userId=" + encodeURIComponent(userId);
-      const res = await fetch(url);
-      const data = await res.json();
+      const url = GAS_URL + "?userId=" + encodeURIComponent(userId);   /*encodeURIComponent(userId): userId に含まれるかもしれない特殊文字（ ? や & や / など）を
+                                             URLでエラーにならない文字列に変換（エンコード）して安全に結合しています。
+                                             これにより、例えば userId が user_001 であれば、"GAS_URL?userId=user_001" というURLが完成します。
+                                             このURLを使ってデータをリクエストすることで、GAS側でどのユーザーからのアクセスかを判別できるようになります。*/
+      const res = await fetch(url);     /*JavaScriptでサーバーからデータ（Web APIなど）を取得する際に行う「非同期通信」の最も基本的な処理*/
+                                       /*fetch(url): 指定されたURLへ通信（HTTPリクエスト）を行い、サーバーからデータを取得してくる機能（Fetch API）。
+                                        await: サーバーからの通信が完了するまで、次の処理へ進まずに待機するキーワード。
+                                        const res: 通信が完了して返ってきた「レスポンス情報」を、変更不可の変数 res に代入している*/
+
+      const data = await res.json();    /*サーバーから取得したデータ（文字列）を、JavaScriptで扱えるオブジェクトや配列に変換し、変数 data に格納する処理*/
+                                        /*非同期処理：パース（変換）には少し時間がかかるため、await をつけて処理が完了するのを待ちます。
+                                       JSONとは：Web上でデータをやり取りするためのテキスト形式です。これを res.json()  (res=response) によって、
+                                       .name や .id のようにドットでアクセスできる通常のオブジェクトに変換します*/
+
 
       if (data.prefillUrl) {
-        location.href = data.prefillUrl;
+        location.href = data.prefillUrl;    /*if (data.prefillUrl)data
+                                      （通常はサーバーから受け取ったデータや外部からの入力値）の中に、
+                                       prefillUrlというデータ（URLの文字列）が空ではない状態で存在しているか（true）を確認しています*/
+                                       /*location.href = data.prefillUrl;
+                                       ブラウザの現在のURL情報（location.href）に新しいURLを代入することで、指定されたページ（アドレス）へ画面を切り替えます*/
       } else {
-        alert("URL取得に失敗しました");
+        alert("URL取得に失敗しました");  /*alert(...): 画面上に警告ダイアログ（ポップアップの小窓）を表示させる命令です*/
+
       }
     }
 
