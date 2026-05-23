@@ -16,13 +16,14 @@
     #loading {
       display: none;
     }
-
+                 
     /* 3つの点のアニメーション */
-    .loader {                        /*display: flex;この要素をフレックスコンテナ（Flexbox）に変えます。中に含まれる子要素（アニメーションの点や輪など）の配置を
+                                      /*display: flex;この要素をフレックスコンテナ（Flexbox）に変えます。中に含まれる子要素（アニメーションの点や輪など）の配置を
                                                      簡単にコントロールできるようになります。
                                       justify-content: center;中の子要素を、水平方向（主軸）の真ん中に集めて配置します。
                                       margin-bottom: 20px;このローディング領域自体の**下に20pxの隙間（外側余白）**を空けます。これにより、
-                                                          下部に続くテキストやコンテンツとくっついてしまうのを防ぎます*/               
+                                                          下部に続くテキストやコンテンツとくっついてしまうのを防ぎます*/  
+    .loader {                                    
       display: flex;
       justify-content: center;
       margin-bottom: 20px;
@@ -44,11 +45,15 @@
     .loader span:nth-child(3) {
       animation-delay: 0.4s;
     }
-
+                                               
     @keyframes bounce {
       from { transform: translateY(0); }
       to   { transform: translateY(-30px); }
     }
+
+                                   /*@keyframes bounce: bounce（バウンス）という名前のアニメーションを定義します。
+                                    from { transform: translateY(0); }: アニメーションの開始時点（0%）では、要素を元の位置（Y軸方向に0）に配置します。
+                                    to { transform: translateY(-30px); }: アニメーションの終了時点（100%）では、要素を上方向に30ピクセル移動させます*/
      #loading p {
     font-size: 60px;
   }
@@ -77,9 +82,15 @@
 
       // ★ ローディング表示（ここで初めて表示される）
       document.getElementById("loading").style.display = "block";
-
+                                              /*document.getElementById("loading")HTMLの中から、id="loading" という目印（ID）がつけられた要素（タグ）を検索して取得します。
+                                              .style取得した要素に対して、CSS（見た目の装飾）を操作するための設定を開きます。
+                                                                        ※ CSS（Cascading Style Sheets）とは、
+                                                                           Webページの「見た目」や「レイアウト」をデザインするためのスタイルシート言語
+                                              .displayCSSの display プロパティ（要素の表示・非表示を切り替える設定）を指定します。
+                                              = "block"その要素の表示形式を block（ブロックレベル要素として表示する）に変更し、画面上に表示させます。*/
       // LIFF 初期化
       await liff.init({ liffId: LIFF_ID });    /*init=initialize（イニシャライズ）*/
+      
                                                /*LINEアプリ内で動作するWebアプリ（LIFFアプリ）を起動するための最も重要な初期化処理*/
 
       if (!liff.isLoggedIn()) {                /*ユーザーがLINEアカウントにログインしていない場合*/
