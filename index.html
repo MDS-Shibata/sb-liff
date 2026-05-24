@@ -71,7 +71,7 @@
   </div>
 
   <script>                                    /*コンピュータに特定の処理を実行させるための「簡易的なプログラム」や「命令を記述したテキストファイル*/
-
+alert("LIFF開始");
     const LIFF_ID = "2010140886-GXbWv0ge";   /*const⇒constant（定数・不変）」に由来するプログラミング用語です。一度設定した値を後から変更（再代入）できない変数*/
 
     const GAS_URL = "https://script.google.com/macros/s/AKfycbzXs8b9v_OUjjB2kebfmlo80xcmMvDgU_CSHN7quvhHJLpgNLMHN_CF8OVLZPH3ui6V/exec";
@@ -90,7 +90,9 @@
                                               = "block"その要素の表示形式を block（ブロックレベル要素として表示する）に変更し、画面上に表示させます。*/
       // LIFF 初期化
       await liff.init({ liffId: LIFF_ID });    /*init=initialize（イニシャライズ）*/
-      
+      alert("LIFF初期化完了");
+
+
                                                /*LINEアプリ内で動作するWebアプリ（LIFFアプリ）を起動するための最も重要な初期化処理*/
 
       if (!liff.isLoggedIn()) {                /*ユーザーがLINEアカウントにログインしていない場合*/
