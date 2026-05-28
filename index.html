@@ -71,10 +71,10 @@
   </div>
 
   <script>                                    /*コンピュータに特定の処理を実行させるための「簡易的なプログラム」や「命令を記述したテキストファイル*/
-alert("LIFF開始");
+
     const LIFF_ID = "2010140886-GXbWv0ge";   /*const⇒constant（定数・不変）」に由来するプログラミング用語です。一度設定した値を後から変更（再代入）できない変数*/
 
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbxR29Q9G241mmJ523k2BBZGXBzvy83v5lCYktIC1CIkSMgaRdijUrQCcU46HgOAsE4W/exec";
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbxZZBr3ht5panqGgXyX7lCEPQ3w4Y2iDIhGXSxhq0qaAvD4FZTc6oqv2WGwHLBeTDBJ/exec";
 
     async function main() {
                                               /*JavaScript（またはTypeScript）で非同期処理（await）を伴う一連のプログラムを、
@@ -90,7 +90,7 @@ alert("LIFF開始");
                                               = "block"その要素の表示形式を block（ブロックレベル要素として表示する）に変更し、画面上に表示させます。*/
       // LIFF 初期化
       await liff.init({ liffId: LIFF_ID });    /*init=initialize（イニシャライズ）*/
-      alert("LIFF初期化完了");
+      
 
 
                                                /*LINEアプリ内で動作するWebアプリ（LIFFアプリ）を起動するための最も重要な初期化処理*/
@@ -108,7 +108,7 @@ alert("LIFF開始");
       const userId = profile.userId;             /*取得したユーザーのプロフィール情報（profile）の中から、個人の識別番号であるユーザーID（userId）を取り出し、
                                                    再代入できない変数（userId）に保存する*/
 
-alert("取得したLINE ID: " + userId);
+
 
 
       // GAS に userId を送信
