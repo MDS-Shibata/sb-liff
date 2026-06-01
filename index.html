@@ -1,4 +1,4 @@
-<!DOCTYPE html>         /**/
+<!DOCTYPE html>         
 <html lang="ja">       
 <head>                  
   <meta charset="UTF-8"> 
@@ -122,6 +122,9 @@
                                                                        /*非同期処理：パース（変換）には少し時間がかかるため、await をつけて処理が完了するのを待ちます。
                                                                          JSONとは：Web上でデータをやり取りするためのテキスト形式です。これを res.json()  (res=response) によって、
                                                                         .name や .id のようにドットでアクセスできる通常のオブジェクトに変換します*/
+
+      // ★ ローディングを非表示にする
+document.getElementById("loading").style.display = "none";
 
 if (data.prefillUrl) {
   liff.openWindow({ url: data.prefillUrl, external: true });
