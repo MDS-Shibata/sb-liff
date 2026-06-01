@@ -116,29 +116,20 @@
                                                                          URLでエラーにならない文字列に変換（エンコード）して安全に結合しています。
                                                                          これにより、例えば userId が user_001 であれば、"GAS_URL?userId=user_001" というURLが完成します。
                                                                          このURLを使ってデータをリクエストすることで、GAS側でどのユーザーからのアクセスかを判別できるようになります。*/
-      const res = await fetch(url);                                     /*JavaScriptでサーバーからデータ（Web APIなど）を取得する際に行う「非同期通信」の最も基本的な処理*/
-                                                                        /*fetch(url): 指定されたURLへ通信（HTTPリクエスト）を行い、サーバーからデータを取得してくる機能（Fetch API）。
-                                                                         await: サーバーからの通信が完了するまで、次の処理へ進まずに待機するキーワード。
-                                                                          const res: 通信が完了して返ってきた「レスポンス情報」を、変更不可の変数 res に代入している*/
-
+       const res = await fetch(url, { method: "GET" });
+                               
       const data = await res.json();                                   /*サーバーから取得したデータ（文字列）を、JavaScriptで扱えるオブジェクトや配列に変換し、変数 data に格納する処理*/
                                                                        /*非同期処理：パース（変換）には少し時間がかかるため、await をつけて処理が完了するのを待ちます。
                                                                          JSONとは：Web上でデータをやり取りするためのテキスト形式です。これを res.json()  (res=response) によって、
                                                                         .name や .id のようにドットでアクセスできる通常のオブジェクトに変換します*/
 
+if (data.prefillUrl) {
+  liff.openWindow({ url: data.prefillUrl, external: true });
+} else {
+  alert("IDが取得できません");
+}
 
-     if (data.prefillUrl) {
-        location.href = data.prefillUrl;                                   /*if (data.prefillUrl)data
-                                                                           （通常はサーバーから受け取ったデータや外部からの入力値）の中に、
-                                                                            prefillUrlというデータ（URLの文字列）が空ではない状態で存在しているか（true）を確認しています*/
-                                                                           /*location.href = data.prefillUrl;
-                                                                          ブラウザの現在のURL情報（location.href）に新しいURLを代入することで、
-                                                                          指定されたページ（アドレス）へ画面を切り替えます*/
-      } else {
-         alert("IDが取得できません " );
-                                             /*alert(...): 画面上に警告ダイアログ（ポップアップの小窓）を表示させる命令です*/
-
-      }
+    
     }
 
     main();        /*プログラムの最後に main(); を入れるのは、「必要な関数や処理の定義（準備）をすべて終えてから、プログラムのメインとなる処理（エントリーポイント）を最後に実行するため」*/
