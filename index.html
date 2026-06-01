@@ -62,6 +62,45 @@
 
 <body>
 
+   <!-- ▼ 注意事項（最初に表示） -->
+<div id="notice" style="
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+">
+  <div style="
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    width: 85%;
+    text-align: left;
+    font-size: 18px;
+    line-height: 1.6;
+  ">
+    <h2 style="text-align:center;">ご利用前の注意事項</h2>
+    <p>・予約は前日までに行ってください。</p>
+    <p>・キャンセルは必ずLINEから行ってください。</p>
+    <p>・乗車時間に遅れないようお願いします。</p>
+
+    <button id="notice-ok" style="
+      margin-top: 20px;
+      width: 100%;
+      padding: 12px;
+      font-size: 20px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+    ">OK</button>
+  </div>
+</div>
+
+  
   <!-- ローディング表示（最初は非表示） -->
   <div id="loading">
     <div class="loader">
@@ -147,43 +186,7 @@ document.getElementById("notice-ok").onclick = () => {
 
  
 </body>
-      <!-- ▼ 注意事項（最初に表示） -->
-<div id="notice" style="
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.6);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-">
-  <div style="
-    background: white;
-    padding: 30px;
-    border-radius: 10px;
-    width: 85%;
-    text-align: left;
-    font-size: 18px;
-    line-height: 1.6;
-  ">
-    <h2 style="text-align:center;">ご利用前の注意事項</h2>
-    <p>・予約は前日までに行ってください。</p>
-    <p>・キャンセルは必ずLINEから行ってください。</p>
-    <p>・乗車時間に遅れないようお願いします。</p>
-
-    <button id="notice-ok" style="
-      margin-top: 20px;
-      width: 100%;
-      padding: 12px;
-      font-size: 20px;
-      background: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 8px;
-    ">OK</button>
-  </div>
-</div>
+     
 
 
 </html>
