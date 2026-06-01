@@ -179,6 +179,8 @@ if (data.prefillUrl) {
        // 注意事項を閉じたら main() を実行
 document.getElementById("notice-ok").onclick = () => {
   document.getElementById("notice").style.display = "none";
+  // 少し待ってから main() を実行（重要）
+  await new Promise(resolve => setTimeout(resolve, 50));
   main();
 };
 
