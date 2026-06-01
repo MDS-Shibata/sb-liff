@@ -128,6 +128,7 @@ document.getElementById("loading").style.display = "none";
 
 if (data.prefillUrl) {
   liff.openWindow({ url: data.prefillUrl, external: true });
+  liff.closeWindow();  // ← 追加
 } else {
   alert("IDが取得できません");
 }
