@@ -135,13 +135,7 @@ if (data.prefillUrl) {
 
     
     }
- // 注意事項を閉じたら main() を実行
-document.getElementById("notice-ok").onclick = () => {
-  document.getElementById("notice").style.display = "none";
-  main();
-};
 
- </script>
 
       <!-- ▼ 注意事項（最初に表示） -->
 <div id="notice" style="
@@ -180,6 +174,14 @@ document.getElementById("notice-ok").onclick = () => {
     ">OK</button>
   </div>
 </div>
+
+       // 注意事項を閉じたら main() を実行
+document.getElementById("notice-ok").onclick = () => {
+  document.getElementById("notice").style.display = "none";
+  main();
+};
+
+ </script>
  
 </body>
 
