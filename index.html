@@ -119,6 +119,8 @@
     async function main() {
                                               /*JavaScript（またはTypeScript）で非同期処理（await）を伴う一連のプログラムを、
                                                 一番最初の開始点（メイン関数）として実行するための関数定義*/
+const params = new URLSearchParams(window.location.search);
+const mode = params.get("mode") || "";
 
       // ★ ローディング表示（ここで初めて表示される）
       document.getElementById("loading").style.display = "block";
@@ -152,10 +154,10 @@
 
 
       // GAS に userId を送信
-      const url = GAS_URL + "?userId=" + encodeURIComponent(userId);   /*encodeURIComponent(userId): userId に含まれるかもしれない特殊文字（ ? や & や / など）を
-                                                                         URLでエラーにならない文字列に変換（エンコード）して安全に結合しています。
-                                                                         これにより、例えば userId が user_001 であれば、"GAS_URL?userId=user_001" というURLが完成します。
-                                                                         このURLを使ってデータをリクエストすることで、GAS側でどのユーザーからのアクセスかを判別できるようになります。*/
+   const url = GAS_URL
+  + "?userId=" + encodeURIComponent(userId)
+  + "&mode=" + encodeURIComponent(mode);
+
        const res = await fetch(url, { method: "GET" });
                                
       const data = await res.json();                                   /*サーバーから取得したデータ（文字列）を、JavaScriptで扱えるオブジェクトや配列に変換し、変数 data に格納する処理*/
