@@ -116,11 +116,23 @@
 
     const GAS_URL = "https://script.google.com/macros/s/AKfycbxzWD6UOabRxD9j6XLtznNoKTQYAxK-4DJcWrGdrsDGKj44lZ793stUE1zKmvRz8P-h/exec";
 
+    // ▼ ページ読み込み時に LIFF を初期化する
+window.onload = async () => {
+  await liff.init({ liffId: LIFF_ID });
+
+  if (!liff.isLoggedIn()) {
+    liff.login();
+    return;
+  }
+};
+
     async function main() {
                                               /*JavaScript（またはTypeScript）で非同期処理（await）を伴う一連のプログラムを、
                                                 一番最初の開始点（メイン関数）として実行するための関数定義*/
-const params = new URLSearchParams(window.location.search);
-const mode = params.get("mode") || "";
+
+      
+    const params = new URLSearchParams(window.location.search);
+    const mode = params.get("mode") || "";
 
       // ★ ローディング表示（ここで初めて表示される）
       document.getElementById("loading").style.display = "block";
@@ -130,12 +142,10 @@ const mode = params.get("mode") || "";
                                                                            Webページの「見た目」や「レイアウト」をデザインするためのスタイルシート言語
                                               .displayCSSの display プロパティ（要素の表示・非表示を切り替える設定）を指定します。
                                               = "block"その要素の表示形式を block（ブロックレベル要素として表示する）に変更し、画面上に表示させます。*/
-      // LIFF 初期化
-      await liff.init({ liffId: LIFF_ID });    /*init=initialize（イニシャライズ）*/
-      
+    
 
 
-                                               /*LINEアプリ内で動作するWebアプリ（LIFFアプリ）を起動するための最も重要な初期化処理*/
+                                             
 
       if (!liff.isLoggedIn()) {                /*ユーザーがLINEアカウントにログインしていない場合*/
 
@@ -170,7 +180,7 @@ document.getElementById("loading").style.display = "none";
 
 if (data.prefillUrl) {
   liff.openWindow({ url: data.prefillUrl, external: true });
- 
+ liff.closeWindow();
 } else {
   alert("IDが取得できません");
 }
