@@ -161,6 +161,18 @@ window.onload = async () => {
                                                    再代入できない変数（userId）に保存する*/
 
 
+       // ★ mode=cancel の場合は cancel.html に遷移
+  if (mode === "cancel") {
+    const url = GAS_URL + "?mode=cancel&userId=" + encodeURIComponent(userId);
+    const res = await fetch(url);
+    const html = await res.text();
+    document.open();
+    document.write(html);
+    document.close();
+    return;
+  }
+
+
 
 
       // GAS に userId を送信
