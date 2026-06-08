@@ -5,14 +5,17 @@ async function main() {
   await liff.init({ liffId: "2010140886-GXbWv0ge" });
 
   const userId = liff.getContext().userId;
-　const res = await fetch(GAS_URL, {
+
+  const res = await fetch(GAS_URL, {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
     mode: "cancel",
     userId: userId
-　  })
-　});
+  })
+});
+
+　
 
   const reservations = await res.json();
   const list = document.getElementById("list");
