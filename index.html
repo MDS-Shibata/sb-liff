@@ -130,6 +130,9 @@ window.onload = async () => {
                                               /*JavaScript（またはTypeScript）で非同期処理（await）を伴う一連のプログラムを、
                                                 一番最初の開始点（メイン関数）として実行するための関数定義*/
 
+      console.log("mode=", mode);
+
+
       
     const params = new URLSearchParams(window.location.search);
     const mode = params.get("mode") || "";
