@@ -4,19 +4,19 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycbwNg8enfIxub1JQuAS_ytiR
 async function main() {
   await liff.init({ liffId: "2010140886-GXbWv0ge" });
 
-  const userId = liff.getContext().userId;
+  // ★ ここを修正：確実に userId を取得
+  const profile = await liff.getProfile();
+  const userId = profile.userId;
 
+  // ★ 予約一覧取得
   const res = await fetch(GAS_URL, {
-  method: "POST",
-   
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    mode: "cancel",
-    userId: userId
-  })
-});
-
-　
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      mode: "cancel",
+      userId: userId
+    })
+  });
 
   const reservations = await res.json();
   const list = document.getElementById("list");
@@ -41,6 +41,7 @@ async function main() {
     list.appendChild(div);
   });
 
+  // ★ キャンセル実行
   document.getElementById("cancelBtn").onclick = async () => {
     const checks = document.querySelectorAll(".chk:checked");
 
@@ -59,6 +60,7 @@ async function main() {
 
     await fetch(GAS_URL, {
       method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         mode: "cancelExec",
         userId: userId,
