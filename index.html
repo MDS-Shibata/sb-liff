@@ -144,15 +144,12 @@ window.onload = async () => {
   const userId = profile.userId;
 
   // ★ mode=cancel の場合は cancel.html に遷移
-  if (mode === "cancel") {
-    const url = GAS_URL + "?mode=cancel&userId=" + encodeURIComponent(userId);
-    const res = await fetch(url);
-    const html = await res.text();
-    document.open();
-    document.write(html);
-    document.close();
-    return;
-  }
+ if (mode === "cancel") {
+  const url = GAS_URL + "?mode=cancel&userId=" + encodeURIComponent(userId);
+  window.location.href = url;  // ← fetchではなく直接遷移
+  return;
+}
+
 
   // ★ 登校・下校の処理
   const url = GAS_URL
