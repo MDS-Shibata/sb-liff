@@ -1,4 +1,4 @@
-<script>
+
 const GAS_URL = "https://script.google.com/macros/s/AKfycbwNg8enfIxub1JQuAS_ytiRB9TmBeCn_Kyb0JQ0guvTt-XjvMZ8X4AONGfp7CUrU856/exec";
 
 async function main() {
@@ -8,6 +8,7 @@ async function main() {
 
   const res = await fetch(GAS_URL, {
   method: "POST",
+   
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
     mode: "cancel",
@@ -71,5 +72,5 @@ async function main() {
 }
 
 main();
-</script>
+
 
