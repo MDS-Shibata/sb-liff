@@ -8,6 +8,10 @@ async function main() {
   const profile = await liff.getProfile();
   const userId = profile.userId;
 
+  // ★ デバッグログ（ここに入れる）
+  console.log("userId=", userId);
+  console.log("送信データ=", JSON.stringify({ mode: "cancel", userId: userId }));
+
   // ★ 予約一覧取得
   const res = await fetch(GAS_URL, {
     method: "POST",
