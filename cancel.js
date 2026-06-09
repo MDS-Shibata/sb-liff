@@ -33,9 +33,7 @@ const res = await fetch(url, {
 
   const reservations = await res.json();*/
 
-  /* ==================================================
-   ▼ ここから：検証用の新しいコード
-===================================================== */
+
 // 変数名を下の処理（reservations.lengthなど）と合わせるため、
 // ここで1回だけ「reservations」という名前でデータを受け取ります
 const reservations = await res.json(); 
@@ -44,9 +42,56 @@ console.log("GASから届いたデータ:", reservations);
   
 //玉と読み込み中の表示停止
   document.getElementById("loading").style.display = "none";
-/* ==================================================
-   ▲ ここまで検証用コード
-===================================================== */
+
+  // 表の枠を作成
+const list = document.getElementById("list");
+list.innerHTML = `
+  <div style="margin-bottom: 40px;">
+    <h3 style="background:#e0f0ff; padding:10px;">登校予約</h3>
+    <table border="1" style="width:100%; border-collapse:collapse;">
+      <thead>
+        <tr style="background:#f8f8f8;">
+          <th>✔</th><th>乗車日</th><th>乗車時刻</th><th>乗車バス停</th>
+        </tr>
+      </thead>
+      <tbody id="toSchoolList"></tbody>
+    </table>
+  </div>
+
+  <div>
+    <h3 style="background:#e0f0ff; padding:10px;">下校予約</h3>
+    <table border="1" style="width:100%; border-collapse:collapse;">
+      <thead>
+        <tr style="background:#f8f8f8;">
+          <th>✔</th><th>乗車日</th><th>乗車時刻</th><th>降車バス停</th>
+        </tr>
+      </thead>
+      <tbody id="fromSchoolList"></tbody>
+    </table>
+  </div>
+`;
+
+const toSchoolList = document.getElementById("toSchoolList");
+const fromSchoolList = document.getElementById("fromSchoolList");
+
+// データを表に追加
+reservations.forEach((r) => {
+  const row = document.createElement("tr");
+  row.innerHTML = `
+    <td><input type="checkbox" class="chk" data-sheet="${r.sheetName}" data-row="${r.row}"></td>
+    <td>${r.rideDate}</td>
+    <td>${r.time || ""}</td>
+    <td>${r.place}</td>
+  `;
+
+  if (r.sheetName.includes("登校")) {
+    toSchoolList.appendChild(row);
+  } else if (r.sheetName.includes("下校")) {
+    fromSchoolList.appendChild(row);
+  }
+});
+
+
   const list = document.getElementById("list");
 
   if (reservations.length === 0) {
@@ -54,20 +99,7 @@ console.log("GASから届いたデータ:", reservations);
     return;
   }
 
-  list.innerHTML = "";
-  reservations.forEach((r) => {
-    const div = document.createElement("div");
-    div.className = "item";
 
-    div.innerHTML = `
-      <label>
-        <input type="checkbox" class="chk" data-sheet="${r.sheetName}" data-row="${r.row}">
-        ${r.rideDate}　${r.place}（${r.sheetName}）
-      </label>
-    `;
-
-    list.appendChild(div);
-  });
 
   // ★ キャンセル実行
   document.getElementById("cancelBtn").onclick = async () => {
