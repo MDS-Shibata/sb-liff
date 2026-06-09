@@ -1,119 +1,79 @@
-const GAS_URL = "https://script.google.com/macros/s/AKfycbzA0rvzWqyZfhPgypcL8WglS5m7R63vx4AE6x765lHqNYlWd2b4DmbwuK2uT_bwYdB8/exec";
-const LIFF_ID = "2010140886-GXbWv0ge";
-
-let fetchedReservations = [];
-
-window.onload = async () => {
-  await liff.init({ liffId: LIFF_ID });
-  if (!liff.isLoggedIn()) {
-    liff.login();
-    return;
-  }
-  const profile = await liff.getProfile();
-  const userId = profile.userId;
-  
-  // 予約一覧をGASから取得
-  await loadReservations(userId);
-};
-
-// GASから予約一覧を読み込んで画面に表示する関数
-async function loadReservations(userId) {
-  try {
-    const url = `${GAS_URL}?mode=cancel&userId=${encodeURIComponent(userId)}`;
-    const res = await fetch(url);
-    const data = await res.json();
-    
-    fetchedReservations = data;
-    
-    const listDiv = document.getElementById("list");
-    listDiv.innerHTML = "";
-    
-    // ★ 追加：データの通信が終わったので、3つの玉と「読み込み中」のエリアを非表示にして消します
-    document.getElementById("loading").style.display = "none";
-    
-    if (data.length === 0) {
-      listDiv.innerHTML = "<p>現在、予約はありません。</p>";
-      return;
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>予約キャンセル</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; text-align: center; padding-top: 80px; }
+    .item { margin-bottom: 10px; text-align: left; }
+    .btn {
+      padding: 10px 20px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      margin-top: 20px;
+      width: 100%;
+      font-size: 16px;
     }
-    
-    // 届いた予約データを1つずつ画面に組み立てて表示
-    data.forEach((item, index) => {
-      const div = document.createElement("div");
-      div.className = "item";
-      
-      // チェックボックスの作成
-      const chk = document.createElement("input");
-      chk.type = "checkbox";
-      chk.id = "chk_" + index;
-      chk.value = index;
-      
-      // ラベルの作成（GAS側で組み立てた「乗車日 時刻 バス停(登下校)」のdisplayTextをそのまま使います）
-      const lbl = document.createElement("label");
-      lbl.htmlFor = "chk_" + index;
-      lbl.style.fontSize = "34px"; // スマホで見やすいように文字を少し大きめに設定
-      lbl.style.marginLeft = "10px";
-      lbl.innerText = item.displayText;
-      
-      div.appendChild(chk);
-      div.appendChild(lbl);
-      listDiv.appendChild(div);
-    });
-    
-  } catch (err) {
-    console.error(err);
-    // エラーが起きた場合も、ずっと玉が動き続けないように非表示にします
-    document.getElementById("loading").style.display = "none";
-    document.getElementById("list").innerHTML = "<p style='color:red;'>データの取得に失敗しました。</p>";
-  }
-}
 
-// 「選択した予約をキャンセルする」ボタンを押したときの処理
-document.getElementById("cancelBtn").onclick = async () => {
-  const checkedBoxes = document.querySelectorAll("#list input[type='checkbox']:checked");
-  if (checkedBoxes.length === 0) {
-    alert("キャンセルしたい予約にチェックを入れてください。");
-    return;
-  }
-  
-  if (!confirm("選択した予約を取り消してもよろしいですか？")) {
-    return;
-  }
-  
-  // 処理開始時に再びローディング（玉）を表示させます
-  document.getElementById("loading").style.display = "block";
-  document.getElementById("list").style.display = "none"; // リストは一時的に隠します
-  
-  const targets = [];
-  checkedBoxes.forEach(box => {
-    const idx = parseInt(box.value);
-    targets.push(fetchedReservations[idx]);
-  });
-  
-  try {
-    // GASの「cancelExec」モードに削除対象リストを送信
-    const res = await fetch(GAS_URL, {
-      method: "POST",
-      body: JSON.stringify({
-        mode: "cancelExec",
-        targets: targets
-      })
-    });
-    const result = await res.json();
-    
-    if (result.success) {
-      alert("キャンセルが完了しました。");
-      liff.closeWindow(); // LINEの画面を自動で閉じます
-    } else {
-      alert("キャンセルの実行に失敗しました。");
-      // 失敗したら画面を元に戻す
-      document.getElementById("loading").style.display = "none";
-      document.getElementById("list").style.display = "block";
+    /* ==================================================
+       ▼ ローディング設定（初期状態を非表示に修正）
+       ================================================== */
+    #loading {
+      display: none; /* ★ ここを none にすることで、最初は非表示にします */
     }
-  } catch (err) {
-    console.error(err);
-    alert("通信エラーが発生しました。");
-    document.getElementById("loading").style.display = "none";
-    document.getElementById("list").style.display = "block";
-  }
-};
+                 
+    .loader {                                    
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
 
+    .loader span {
+      width: 30px;
+      height: 30px;
+      margin: 0 10px;
+      background: #333;
+      border-radius: 50%;
+      animation: bounce 0.6s infinite alternate;
+    }
+
+    .loader span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .loader span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+                                               
+    @keyframes bounce {
+      from { transform: translateY(0); }
+      to   { transform: translateY(-30px); }
+    }
+
+    #loading p {
+      font-size: 60px;
+    }
+  </style>
+</head>
+<body>
+
+<h2>予約キャンセル</h2>
+
+<div id="loading">
+  <div class="loader">
+    <span></span><span></span><span></span>
+  </div>
+  <p>読み込み中です…</p>
+</div>
+
+<div id="list"></div>
+
+<button id="cancelBtn" class="btn">選択した予約をキャンセルする</button>
+
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<script src="cancel.js"></script>
+
+</body>
+</html>
