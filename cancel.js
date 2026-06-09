@@ -13,14 +13,23 @@ async function main() {
   console.log("送信データ=", JSON.stringify({ mode: "cancel", userId: userId }));
 
   // ★ 予約一覧取得
-  const res = await fetch(GAS_URL, {
+/*  const res = await fetch(GAS_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       mode: "cancel",
       userId: userId
     })
-  });
+  });*/
+
+  // ◯ 修正後（URLの後ろにパラメーターとしてくっつけてPOSTする）
+const url = `${GAS_URL}?mode=cancel&userId=${encodeURIComponent(userId)}`;
+const res = await fetch(url, {
+    method: "POST"
+});
+const data = await res.json();
+
+  
 
   const reservations = await res.json();
   const list = document.getElementById("list");
