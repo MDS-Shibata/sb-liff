@@ -3,9 +3,13 @@
 <head>
   <meta charset="utf-8">
   <title>予約キャンセル</title>
+  
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <script src="cancel.js"></script>
+
   <style>
     body { font-family: sans-serif; padding: 20px; text-align: center; padding-top: 80px; }
-    .item { margin-bottom: 10px; text-align: left; }
+    .item { margin-bottom: 15px; text-align: left; }
     .btn {
       padding: 10px 20px;
       background: #007bff;
@@ -18,10 +22,10 @@
     }
 
     /* ==================================================
-       ▼ ローディング設定（初期状態を「表示」に戻しました）
+       ▼ ローディング設定（最初は表示、JSで消去）
        ================================================== */
     #loading {
-      display: block; /* ★ ここを block に戻すことで、画面が開いた瞬間に玉を表示させます */
+      display: block; 
     }
                  
     .loader {                                    
@@ -71,9 +75,6 @@
 <div id="list"></div>
 
 <button id="cancelBtn" class="btn">選択した予約をキャンセルする</button>
-
-<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-<script src="cancel.js"></script>
 
 </body>
 </html>
