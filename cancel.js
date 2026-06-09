@@ -98,6 +98,6 @@ console.log("GASから届いたデータ:", reservations);
   };
 }
 
-main();
+window.onload = main;
 
 
