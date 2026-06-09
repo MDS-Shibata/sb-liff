@@ -27,11 +27,23 @@ const url = `${GAS_URL}?mode=cancel&userId=${encodeURIComponent(userId)}`;
 const res = await fetch(url, {
     method: "POST"
 });
-const data = await res.json();
+/*const data = await res.json();
 
   
 
-  const reservations = await res.json();
+  const reservations = await res.json();*/
+
+  /* ==================================================
+   ▼ ここから：検証用の新しいコード
+===================================================== */
+// 変数名を下の処理（reservations.lengthなど）と合わせるため、
+// ここで1回だけ「reservations」という名前でデータを受け取ります
+const reservations = await res.json(); 
+
+console.log("GASから届いたデータ:", reservations);
+/* ==================================================
+   ▲ ここまで検証用コード
+===================================================== */
   const list = document.getElementById("list");
 
   if (reservations.length === 0) {
