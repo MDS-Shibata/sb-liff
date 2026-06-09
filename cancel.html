@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <title>予約キャンセル</title>
   <style>
-    body { font-family: sans-serif; padding: 20px; }
-    .item { margin-bottom: 10px; }
+    body { font-family: sans-serif; padding: 20px; text-align: center; padding-top: 80px; }
+    .item { margin-bottom: 10px; text-align: left; } /* リスト表示は見やすいように左寄せに維持します */
     .btn {
       padding: 10px 20px;
       background: #007bff;
@@ -16,13 +16,65 @@
       width: 100%;
       font-size: 16px;
     }
+
+    /* ==================================================
+       ▼ index.html からそのまま移植したローディングスタイル
+       ================================================== */
+    /* ローディング全体 */
+    #loading {
+      display: block; /* 初期状態では表示しておき、cancel.js 側でデータが溜まったら非表示にします */
+    }
+                 
+    /* 3つの点のフレックス配置設定 */  
+    .loader {                                    
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    /* 跳ねる玉の見た目とアニメーション速度設定 */
+    .loader span {
+      width: 30px;
+      height: 30px;
+      margin: 0 10px;
+      background: #333;
+      border-radius: 50%;
+      animation: bounce 0.6s infinite alternate;
+    }
+
+    /* 2番目と3番目の玉の動くタイミングをずらす設定 */
+    .loader span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .loader span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+                                               
+    /* 上下に30px跳ね上がるアニメーションの定義 */
+    @keyframes bounce {
+      from { transform: translateY(0); }
+      to   { transform: translateY(-30px); }
+    }
+
+    /* 読み込み中テキストの大きさを index.html と同じ 60px に */
+    #loading p {
+      font-size: 60px;
+    }
   </style>
 </head>
 <body>
 
 <h2>予約キャンセル</h2>
 
-<div id="list">読み込み中です…</div>
+<div id="loading">
+  <div class="loader">
+    <span></span><span></span><span></span>
+  </div>
+  <p>読み込み中です…</p>
+</div>
+
+<div id="list"></div>
 
 <button id="cancelBtn" class="btn">選択した予約をキャンセルする</button>
 
@@ -31,3 +83,4 @@
 
 </body>
 </html>
+
