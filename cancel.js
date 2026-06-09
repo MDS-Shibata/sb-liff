@@ -41,6 +41,9 @@ const res = await fetch(url, {
 const reservations = await res.json(); 
 
 console.log("GASから届いたデータ:", reservations);
+  
+//玉と読み込み中の表示停止
+  document.getElementById("loading").style.display = "none";
 /* ==================================================
    ▲ ここまで検証用コード
 ===================================================== */
