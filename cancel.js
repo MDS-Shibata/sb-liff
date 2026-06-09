@@ -92,7 +92,7 @@ reservations.forEach((r) => {
 });
 
 
-  const list = document.getElementById("list");
+ 
 
   if (reservations.length === 0) {
     list.innerHTML = "現在キャンセルできる予約はありません。";
