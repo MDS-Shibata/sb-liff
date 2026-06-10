@@ -58,7 +58,7 @@ list.innerHTML = `
     </table>
   </div>
 
-  <divstyle="font-size: 35px;" >
+  <div style="margin-bottom: 40px;font-size: 35px;">
     <h3 style="background:#e0f0ff; padding:30px;">下校予約</h3>
     <table border="1" style="width:100%; border-collapse:collapse;">
       <thead>
