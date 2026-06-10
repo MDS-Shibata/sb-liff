@@ -119,6 +119,9 @@ reservations.forEach((r) => {
       return;
     }
 
+    // ★ キャンセル開始 → ローディング表示
+  document.getElementById("loading").style.display = "block";
+
     const targets = [];
     checks.forEach(c => {
       targets.push({
