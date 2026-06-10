@@ -99,7 +99,17 @@ reservations.forEach((r) => {
     fromSchoolList.appendChild(row);
   }
 });
-
+// ★ チェックした行を赤くする
+document.addEventListener("change", (e) => {
+  if (e.target.classList.contains("chk")) {
+    const tr = e.target.closest("tr");
+    if (e.target.checked) {
+      tr.classList.add("tr-selected");
+    } else {
+      tr.classList.remove("tr-selected");
+    }
+  }
+});
 
  
 
