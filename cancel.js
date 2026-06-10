@@ -47,7 +47,7 @@ console.log("GASから届いたデータ:", reservations);
 const list = document.getElementById("list");
 list.innerHTML = `
   <div style="margin-bottom: 40px;font-size: 40px;">
-    <h3 style="background:#7fffd4; padding:20px;">登校予約</h3>
+    <h3 style="background:#7fffd4; padding:10px;">登校予約</h3>
     <table border="1" style="width:100%; border-collapse:collapse;">
       <thead>
         <tr style="background:#f8f8f8;">
@@ -63,7 +63,7 @@ list.innerHTML = `
   </div>
 
   <div style="margin-bottom: 40px;font-size: 40px;">
-    <h3 style="background:#e0f0ff; padding:20px;">下校予約</h3>
+    <h3 style="background:#e0f0ff; padding:10px;">下校予約</h3>
     <table border="1" style="width:100%; border-collapse:collapse;">
       <thead>
         <tr style="background:#f8f8f8;">
