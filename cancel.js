@@ -51,7 +51,11 @@ list.innerHTML = `
     <table border="1" style="width:100%; border-collapse:collapse;">
       <thead>
         <tr style="background:#f8f8f8;">
-          <th>✔</th><th>乗車日</th><th>乗車時刻</th><th>乗車バス停</th>
+          <th style="font-weight:300;">✔</th>
+<th style="font-weight:300;">乗車日</th>
+<th style="font-weight:300;">到着時刻</th>
+<th style="font-weight:300;">乗車バス停</th>
+
         </tr>
       </thead>
       <tbody id="toSchoolList"></tbody>
@@ -63,7 +67,11 @@ list.innerHTML = `
     <table border="1" style="width:100%; border-collapse:collapse;">
       <thead>
         <tr style="background:#f8f8f8;">
-          <th>✔</th><th>乗車日</th><th>乗車時刻</th><th>降車バス停</th>
+         <th style="font-weight:300;">✔</th>
+<th style="font-weight:300;">乗車日</th>
+<th style="font-weight:300;">到着時刻</th>
+<th style="font-weight:300;">乗車バス停</th>
+
         </tr>
       </thead>
       <tbody id="fromSchoolList"></tbody>
