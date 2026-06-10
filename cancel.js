@@ -22,16 +22,14 @@ async function main() {
     })
   });*/
 
-  // ◯ 修正後（URLの後ろにパラメーターとしてくっつけてPOSTする）
-const url = `${GAS_URL}?mode=cancel&userId=${encodeURIComponent(userId)}`;
-const res = await fetch(url, {
-    method: "POST"
+ const res = await fetch(GAS_URL, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    mode: "cancel",
+    userId: userId
+  })
 });
-/*const data = await res.json();
-
-  
-
-  const reservations = await res.json();*/
 
 
 // 変数名を下の処理（reservations.lengthなど）と合わせるため、
