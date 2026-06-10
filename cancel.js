@@ -172,7 +172,8 @@ document.getElementById("cancelBtn").onclick = async () => {
   document.getElementById("cancelBtn").style.display = "block";
   document.getElementById("loading").style.display = "none";
 };
- 
+  
+}
 
 window.onload = main;
 
