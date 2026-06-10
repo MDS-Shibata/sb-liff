@@ -52,9 +52,9 @@ list.innerHTML = `
       <thead>
         <tr style="background:#f8f8f8;">
           <th style="font-weight:300;">✔</th>
-<th style="font-weight:300;">乗車日</th>
-<th style="font-weight:300;">到着時刻</th>
-<th style="font-weight:300;">乗車バス停</th>
+<th style="font-weight:300; font-size:30px;">乗車日</th>
+<th style="font-weight:300; font-size:30px;">到着時刻</th>
+<th style="font-weight:300; font-size:30px;">乗車バス停</th>
 
         </tr>
       </thead>
@@ -68,9 +68,10 @@ list.innerHTML = `
       <thead>
         <tr style="background:#f8f8f8;">
          <th style="font-weight:300;">✔</th>
-<th style="font-weight:300;">乗車日</th>
-<th style="font-weight:300;">乗車時刻</th>
-<th style="font-weight:300;">降車バス停</th>
+<th style="font-weight:300; font-size:30px;">乗車日</th>
+<th style="font-weight:300; font-size:30px;">出発時刻</th>
+<th style="font-weight:300; font-size:30px;">降車バス停</th>
+
 
         </tr>
       </thead>
