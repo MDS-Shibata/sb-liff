@@ -119,6 +119,11 @@ reservations.forEach((r) => {
       return;
     }
 
+    // ★ キャンセル開始 → 画面を loading のみにする
+  document.getElementById("list").style.display = "none";
+  document.getElementById("cancelBtn").style.display = "none";
+  document.getElementById("loading").style.display = "block";
+
    
     const targets = [];
     checks.forEach(c => {
