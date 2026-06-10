@@ -1,5 +1,5 @@
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbxDNY6xW0Xa4CfsZoS7mmC1piRA5AokI3PwhFFk64NtLlEu3p2wTUl7_gN19PptxPxK/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxrp0aLydlmwU-YCjRSabsOXyqPiDSVAAWrAVD2ANj3YFnlWIttlBdPfmjH6sxP0f3C/exec";
 
 async function main() {
   await liff.init({ liffId: "2010140886-GXbWv0ge" });
