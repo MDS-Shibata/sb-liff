@@ -118,32 +118,30 @@ document.addEventListener("change", (e) => {
     return;
   }
 
+// ★ キャンセル実行
+document.getElementById("cancelBtn").onclick = async () => {
+  const checks = document.querySelectorAll(".chk:checked");
 
+  if (checks.length === 0) {
+    alert("キャンセルする予約を選択してください。");
+    return;
+  }
 
-  // ★ キャンセル実行
-  document.getElementById("cancelBtn").onclick = async () => {
-    const checks = document.querySelectorAll(".chk:checked");
-
-    if (checks.length === 0) {
-      alert("キャンセルする予約を選択してください。");
-      return;
-    }
-
-    // ★ キャンセル開始 → 画面を loading のみにする
+  // ★ キャンセル開始 → 画面を「処理中」に切り替え
   document.getElementById("list").style.display = "none";
   document.getElementById("cancelBtn").style.display = "none";
-  document.getElementById("loading").style.display = "block";
+  document.getElementById("loading").style.display = "block"; // ← 処理中の表示
 
-   
-    const targets = [];
-    checks.forEach(c => {
-      targets.push({
-        sheetName: c.dataset.sheet,
-        row: Number(c.dataset.row)
-      });
+  const targets = [];
+  checks.forEach(c => {
+    targets.push({
+      sheetName: c.dataset.sheet,
+      row: Number(c.dataset.row)
     });
+  });
 
-    await fetch(GAS_URL, {
+  try {
+    const res = await fetch(GAS_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -153,10 +151,28 @@ document.addEventListener("change", (e) => {
       })
     });
 
-    alert("キャンセルが完了しました。");
-    liff.closeWindow();
-  };
-}
+    const json = await res.json();
+
+    if (json.success) {
+      // ★ 完了メッセージ
+      alert("キャンセルが完了しました。");
+
+      // LIFF を閉じる
+      liff.closeWindow();
+    } else {
+      alert("キャンセルに失敗しました。");
+    }
+
+  } catch (err) {
+    alert("通信エラーが発生しました。");
+  }
+
+  // ★ 失敗時のみ画面を戻す（成功時は closeWindow）
+  document.getElementById("list").style.display = "block";
+  document.getElementById("cancelBtn").style.display = "block";
+  document.getElementById("loading").style.display = "none";
+};
+ 
 
 window.onload = main;
 
