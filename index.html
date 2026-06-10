@@ -139,11 +139,16 @@ window.onload = async () => {
   const mode = params.get("mode") || "";
 
   // ★ modeがcancelの時はキャンセル用の注意事項を表示、それ以外は通常の注意事項を表示
+ // ★ キャンセル画面へ行くときは index の中身を一切表示しない
   if (mode === "cancel") {
+    // 注意事項だけ表示
     document.getElementById("notice-cancel").style.display = "flex";
-  } else {
-    document.getElementById("notice-normal").style.display = "flex";
+    return; // ← ここで止める（body は表示しない）
   }
+
+  // ★ 通常予約のときだけ body を表示
+  document.body.style.display = "block";
+  document.getElementById("notice-normal").style.display = "flex";
 
   await liff.init({ liffId: LIFF_ID });
 
