@@ -46,7 +46,7 @@ console.log("GASから届いたデータ:", reservations);
   // 表の枠を作成
 const list = document.getElementById("list");
 list.innerHTML = `
-  <div style="margin-bottom: 40px;font-size: 28px;">
+  <div style="margin-bottom: 40px;font-size: 35px;">
     <h3 style="background:#e0f0ff; padding:30px;">登校予約</h3>
     <table border="1" style="width:100%; border-collapse:collapse;">
       <thead>
@@ -58,7 +58,7 @@ list.innerHTML = `
     </table>
   </div>
 
-  <div>
+  <divstyle="font-size: 35px;" >
     <h3 style="background:#e0f0ff; padding:30px;">下校予約</h3>
     <table border="1" style="width:100%; border-collapse:collapse;">
       <thead>
