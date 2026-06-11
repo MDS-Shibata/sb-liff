@@ -197,7 +197,8 @@
 
     document.getElementById("notice-cancel-ok").onclick = () => {
       document.getElementById("notice-cancel").style.display = "none";
-      window.location.href = "/cancel.html?userId=" + encodeURIComponent(globalUserId);
+     window.location.href = "/cancel.html?mode=cancel&userId=" + encodeURIComponent(globalUserId);
+
     };
   </script>
 
