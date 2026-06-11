@@ -46,39 +46,39 @@
       to   { transform: translateY(-30px); }
     }
 
-     #loading p {
-    font-size: 60px;
-  }
+    #loading p {
+      font-size: 60px;
+    }
 
-  /* 【追加】注意事項の共通ポップアップ用スタイル設定 */
-  .notice-modal {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.6);
-    display: none; /* 初期状態ではどちらも非表示にしてJavaScriptで制御します */
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-  }
-  .notice-content {
-    background: white;
-    padding: 30px;
-    border-radius: 10px;
-    width: 85%;
-    text-align: left;
-    font-size: 40px;
-    line-height: 1.6;
-  }
-  .notice-btn {
-    margin-top: 20px;
-    width: 100%;
-    padding: 30px;
-    font-size: 40px;
-    color: white;
-    border: none;
-    border-radius: 8px;
-  }
+    /* 注意事項の共通ポップアップ用スタイル設定 */
+    .notice-modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    .notice-content {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      width: 85%;
+      text-align: left;
+      font-size: 40px;
+      line-height: 1.6;
+    }
+    .notice-btn {
+      margin-top: 20px;
+      width: 100%;
+      padding: 30px;
+      font-size: 40px;
+      color: white;
+      border: none;
+      border-radius: 8px;
+    }
   </style>
 </head>
 
@@ -93,7 +93,6 @@
       <p>・初回予約時は教習生番号の打ち間違いに気をつけて下さい</p>
       <p style="font-size: 26px; color: #007BFF;">※利用をやめる時は、必ずキャンセルを入れて下さい</p>
        
-
       <button id="notice-ok" style="
         margin-top: 20px;
         width: 100%;
@@ -118,7 +117,6 @@
     </div>
   </div>
 
-  
   <div id="loading">
     <div class="loader">
       <span></span><span></span><span></span>
@@ -126,45 +124,34 @@
     <p>読み込み中です…</p>
   </div>
 
- 
-    <script>
+  <script>
     const LIFF_ID = "2010140886-GXbWv0ge";
     const GAS_URL = "https://script.google.com/macros/s/AKfycbwsJ7SEDmz1MDsFUQNAS2CduVCLKA3LojxYPV4WJnm_nIapXMog2BgvPwERucJC52wx/exec";
 
-    // ユーザーのLINEユーザーIDを保持する変数
     let globalUserId = "";
 
-    // ▼ ページ読み込み時に最初に実行する処理
     window.onload = async () => {
-      // 1. まずローディングを表示
       document.getElementById("loading").style.display = "block";
 
       try {
-        // 2. LINEのLIFF初期化を確実に実行
         await liff.init({ liffId: LIFF_ID });
 
-        // 3. ログインしていなければログインさせる
         if (!liff.isLoggedIn()) {
           liff.login();
           return;
         }
 
-        // 4. 確実にプロフィール（userId）を取得しておく
         const profile = await liff.getProfile();
         globalUserId = profile.userId;
 
-        // 5. 初期化とログインが終わったのでローディングを一旦消す
         document.getElementById("loading").style.display = "none";
 
-        // 6. URLのパラメータから mode を取得して分岐
         const params = new URLSearchParams(window.location.search);
         const mode = params.get("mode") || "";
 
         if (mode === "cancel") {
-          // キャンセルモードなら、キャンセル用ポップアップを表示
           document.getElementById("notice-cancel").style.display = "flex";
         } else {
-          // 通常予約なら、通常用ポップアップを表示
           document.body.style.display = "block";
           document.getElementById("notice-normal").style.display = "flex";
         }
@@ -175,15 +162,12 @@
       }
     };
 
-    // ★ 通常予約の処理（「OK」ボタンを押した後に実行）
     async function main() {
       const params = new URLSearchParams(window.location.search);
       const mode = params.get("mode") || "";
 
-      // 画面を読み込み中にする
       document.getElementById("loading").style.display = "block";
 
-      // GASへ通信して予約フォームのURLを取得
       const url = GAS_URL
         + "?userId=" + encodeURIComponent(globalUserId)
         + "&mode=" + encodeURIComponent(mode);
@@ -206,18 +190,16 @@
       }
     }
 
-    // 通常予約の注意事項を閉じたら main() を実行
     document.getElementById("notice-ok").onclick = () => {
       document.getElementById("notice-normal").style.display = "none";
       main();
     };
 
-    // キャンセル用の注意事項を閉じたら cancel.html に移動（userIdを引き継ぐ）
     document.getElementById("notice-cancel-ok").onclick = () => {
       document.getElementById("notice-cancel").style.display = "none";
-      // URLの後ろに ?userId=xxx をくっつけて移動します
       window.location.href = "/cancel.html?userId=" + encodeURIComponent(globalUserId);
     };
   </script>
 
-    
+</body>
+</html>
