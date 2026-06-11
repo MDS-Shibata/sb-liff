@@ -128,92 +128,96 @@
 
   <script>                                    /*コンピュータに特定の処理を実行させるための「簡易的なプログラム」や「命令を記述したテキストファイル*/
 
-    const LIFF_ID = "2010140886-GXbWv0ge";   /*const⇒constant（定数・不変）」に由来するプログラミング用語です。一度設定した値を後から変更（再代入）できない変数*/
-
+    <script>
+    const LIFF_ID = "2010140886-GXbWv0ge";
     const GAS_URL = "https://script.google.com/macros/s/AKfycbwsJ7SEDmz1MDsFUQNAS2CduVCLKA3LojxYPV4WJnm_nIapXMog2BgvPwERucJC52wx/exec";
 
-    // ▼ ページ読み込み時に LIFF を初期化する
-window.onload = async () => {
-  // URLのパラメータから mode（cancelなど）を取得する
-  const params = new URLSearchParams(window.location.search);
-  const mode = params.get("mode") || "";
+    // ユーザーのLINEユーザーIDを保持する変数
+    let globalUserId = "";
 
-  // ★ modeがcancelの時はキャンセル用の注意事項を表示、それ以外は通常の注意事項を表示
- // ★ キャンセル画面へ行くときは index の中身を一切表示しない
-  if (mode === "cancel") {
-    // 注意事項だけ表示
-    document.getElementById("notice-cancel").style.display = "flex";
-    return; // ← ここで止める（body は表示しない）
-  }
+    // ▼ ページ読み込み時に最初に実行する処理
+    window.onload = async () => {
+      // 1. まずローディングを表示
+      document.getElementById("loading").style.display = "block";
 
-  // ★ 通常予約のときだけ body を表示
-  document.body.style.display = "block";
-  document.getElementById("notice-normal").style.display = "flex";
+      try {
+        // 2. LINEのLIFF初期化を確実に実行
+        await liff.init({ liffId: LIFF_ID });
 
-  await liff.init({ liffId: LIFF_ID });
+        // 3. ログインしていなければログインさせる
+        if (!liff.isLoggedIn()) {
+          liff.login();
+          return;
+        }
 
-  if (!liff.isLoggedIn()) {
-    liff.login();
-    return;
-  }
-};
+        // 4. 確実にプロフィール（userId）を取得しておく
+        const profile = await liff.getProfile();
+        globalUserId = profile.userId;
 
+        // 5. 初期化とログインが終わったのでローディングを一旦消す
+        document.getElementById("loading").style.display = "none";
+
+        // 6. URLのパラメータから mode を取得して分岐
+        const params = new URLSearchParams(window.location.search);
+        const mode = params.get("mode") || "";
+
+        if (mode === "cancel") {
+          // キャンセルモードなら、キャンセル用ポップアップを表示
+          document.getElementById("notice-cancel").style.display = "flex";
+        } else {
+          // 通常予約なら、通常用ポップアップを表示
+          document.body.style.display = "block";
+          document.getElementById("notice-normal").style.display = "flex";
+        }
+
+      } catch (err) {
+        console.error("LIFF初期化エラー:", err);
+        alert("LINEとの通信に失敗しました。時間をおいて再度お試しください。");
+      }
+    };
+
+    // ★ 通常予約の処理（「OK」ボタンを押した後に実行）
     async function main() {
+      const params = new URLSearchParams(window.location.search);
+      const mode = params.get("mode") || "";
 
-  const params = new URLSearchParams(window.location.search);
-  const mode = params.get("mode") || "";
+      // 画面を読み込み中にする
+      document.getElementById("loading").style.display = "block";
 
-  console.log("mode=", mode);
+      // GASへ通信して予約フォームのURLを取得
+      const url = GAS_URL
+        + "?userId=" + encodeURIComponent(globalUserId)
+        + "&mode=" + encodeURIComponent(mode);
 
-  document.getElementById("loading").style.display = "block";
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
 
-  if (!liff.isLoggedIn()) {
-    liff.login();
-    return;
-  }
+        document.getElementById("loading").style.display = "none";
 
-  const profile = await liff.getProfile();
-  const userId = profile.userId;
+        if (data.prefillUrl) {
+          liff.openWindow({ url: data.prefillUrl, external: true });
+          liff.closeWindow();
+        } else {
+          alert("予約用URLの取得に失敗しました。");
+        }
+      } catch (e) {
+        document.getElementById("loading").style.display = "none";
+        alert("通信エラーが発生しました。");
+      }
+    }
 
-  // ★ mode=cancel の場合は cancel.html に遷移
-if (mode === "cancel") {
-  window.location.href = "/cancel.html";
-  return;
-}
+    // 通常予約の注意事項を閉じたら main() を実行
+    document.getElementById("notice-ok").onclick = () => {
+      document.getElementById("notice-normal").style.display = "none";
+      main();
+    };
 
+    // キャンセル用の注意事項を閉じたら cancel.html に移動
+    document.getElementById("notice-cancel-ok").onclick = () => {
+      document.getElementById("notice-cancel").style.display = "none";
+      window.location.href = "/cancel.html";
+    };
+  </script>
 
-
-  // ★ 登校・下校の処理
-  const url = GAS_URL
-    + "?userId=" + encodeURIComponent(userId)
-    + "&mode=" + encodeURIComponent(mode);
-
-  const res = await fetch(url);
-  const data = await res.json();
-
-  document.getElementById("loading").style.display = "none";
-
-  if (data.prefillUrl) {
-    liff.openWindow({ url: data.prefillUrl, external: true });
-    liff.closeWindow();
-  } else {
-    alert("IDが取得できません");
-  }
-}
-
-// 通常予約の注意事項を閉じたら main() を実行
-document.getElementById("notice-ok").onclick = () => {
-  document.getElementById("notice-normal").style.display = "none";
-  main();
-};
-
-// ★【追加】キャンセル用の注意事項を閉じたら直接 cancel.html に移動させるための処理
-document.getElementById("notice-cancel-ok").onclick = () => {
-  document.getElementById("notice-cancel").style.display = "none";
-  window.location.href = "/cancel.html";
-};
-
- </script>
-
-</body>
-</html>
+    
