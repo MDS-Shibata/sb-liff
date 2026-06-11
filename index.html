@@ -212,10 +212,11 @@
       main();
     };
 
-    // キャンセル用の注意事項を閉じたら cancel.html に移動
+    // キャンセル用の注意事項を閉じたら cancel.html に移動（userIdを引き継ぐ）
     document.getElementById("notice-cancel-ok").onclick = () => {
       document.getElementById("notice-cancel").style.display = "none";
-      window.location.href = "/cancel.html";
+      // URLの後ろに ?userId=xxx をくっつけて移動します
+      window.location.href = "/cancel.html?userId=" + encodeURIComponent(globalUserId);
     };
   </script>
 
