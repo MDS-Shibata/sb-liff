@@ -1,16 +1,25 @@
-
 const GAS_URL = "https://script.google.com/macros/s/AKfycbwsJ7SEDmz1MDsFUQNAS2CduVCLKA3LojxYPV4WJnm_nIapXMog2BgvPwERucJC52wx/exec";
 
 async function main() {
   await liff.init({ liffId: "2010140886-GXbWv0ge" });
 
-  // ★ ここを修正：確実に userId を取得
-  const profile = await liff.getProfile();
-  const userId = profile.userId;
+  // 1. URLの後ろについているパラメーター（?userId=xxx）を読み取る
+  const params = new URLSearchParams(window.location.search);
+  let userId = params.get("userId");
 
-  // ★ デバッグログ（ここに入れる）
+  // 2. もしURLから取得できなかった時のための安全策（通常通りLINEから取得）
+  if (!userId) {
+    const profile = await liff.getProfile();
+    userId = profile.userId;
+  }
+
+  // ★ デバッグログ（開発者ツールで確認用）
   console.log("userId=", userId);
   console.log("送信データ=", JSON.stringify({ mode: "cancel", userId: userId }));
+
+  // ★ 予約一覧取得
+  const res = await fetch(GAS_URL, {
+// 〜〜これ以降の const res = await fetch... などのコードは一切触らずそのままで大丈夫です〜〜
 
   // ★ 予約一覧取得
 /*  const res = await fetch(GAS_URL, {
