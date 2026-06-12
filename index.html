@@ -57,13 +57,34 @@
       font-size: 40px;
       line-height: 1.6;
     }
+
+    /* キャンセル画面用スタイル */
+    .btn {
+      padding: 30px 20px;
+      background: #dc143c;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      margin-top: 40px;
+      width: 100%;
+      font-size: 40px;
+      font-weight: bold;
+      display: none; /* 初期は非表示 */
+    }  
+    .chk {
+      transform: scale(2.5);
+      transform-origin: center;
+      vertical-align: middle;
+      margin-right: 20px;
+    }
+    .tr-selected {
+      background-color: #ffdddd !important;
+    }
   </style>
 </head>
 
-<!-- ★ 最初は絶対に非表示にする -->
 <body style="display:none;">
 
-  <!-- 通常予約の注意事項 -->
   <div id="notice-normal" class="notice-modal">
     <div class="notice-content">
       <h2 style="text-align:center;">ご利用前の注意事項</h2>
@@ -86,7 +107,6 @@
     </div>
   </div>
 
-  <!-- キャンセル用の注意事項 -->
   <div id="notice-cancel" class="notice-modal">
     <div class="notice-content">
       <h2 style="text-align:center;">キャンセル時の注意事項</h2>
@@ -107,7 +127,12 @@
     </div>
   </div>
 
-  <!-- ローディング -->
+  <div id="cancel-main-view" style="display: none; padding: 20px;">
+    <h2 style="font-size: 60px; font-weight: bold; margin-bottom: 40px;">予約一覧</h2>
+    <div id="list"></div>
+    <button id="cancelBtn" class="btn">選択した予約をキャンセルする</button>
+  </div>
+
   <div id="loading">
     <div class="loader">
       <span></span><span></span><span></span>
@@ -118,16 +143,17 @@
   <script>
     const LIFF_ID = "2010140886-GXbWv0ge";
     const GAS_URL = "https://script.google.com/macros/s/AKfycbxZwsUavWWwPV1Ql-eMxQ-SzeZQde6bo9JiRduEXP_qtJvDh9EUu4e7yi2PYJAxIPq9/exec";
+    
+    let globalUserId = "";
 
     // ▼ ページ読み込み時
     window.onload = async () => {
       const params = new URLSearchParams(window.location.search);
       const mode = params.get("mode") || "";
 
-      // body は最初は非表示のまま
       document.body.style.display = "none";
 
-      // ★ キャンセルでも必ず LIFF 初期化（白画面防止）
+      // LIFF 初期化
       await liff.init({ liffId: LIFF_ID });
 
       if (!liff.isLoggedIn()) {
@@ -135,8 +161,12 @@
         return;
       }
 
+      const profile = await liff.getProfile();
+      globalUserId = profile.userId;
+
       // ★ キャンセルモード
       if (mode === "cancel") {
+        document.body.style.display = "block";
         document.getElementById("notice-cancel").style.display = "flex";
         return;
       }
@@ -146,48 +176,27 @@
       document.getElementById("notice-normal").style.display = "flex";
     };
 
-    // ▼ 通常予約の注意事項 → main() 実行
+    // ▼ 通常予約の注意事項 → 通常のメイン処理実行
     document.getElementById("notice-ok").onclick = () => {
       document.getElementById("notice-normal").style.display = "none";
-      main();
+      mainNormal();
     };
 
-    //6 12 18:07変更 
-    // ▼ キャンセル注意事項 → userId を引き継いで cancel.html へ
-    document.getElementById("notice-cancel-ok").onclick = async () => {
-      try {
-        // 遷移前にプロファイルから userId を取得
-        const profile = await liff.getProfile();
-        const userId = profile.userId;
-
-        // URLに userId を含めて遷移する
-        window.location.href = `cancel.html?userId=${encodeURIComponent(userId)}`;
-      } catch (error) {
-        console.error("ユーザーIDの取得に失敗しました", error);
-        // 万が一取得失敗した時の保険として、そのまま遷移
-        window.location.href = "cancel.html";
-      }
+    // ▼ キャンセル注意事項 → そのままこの画面でキャンセル一覧を表示
+    document.getElementById("notice-cancel-ok").onclick = () => {
+      document.getElementById("notice-cancel").style.display = "none";
+      showCancelList();
     };
-    
-
-
-    // ▼ キャンセル注意事項 → cancel.html へ
-    /*document.getElementById("notice-cancel-ok").onclick = () => {
-      window.location.href = "cancel.html";
-    };*/
 
     // ▼ 通常予約のメイン処理
-    async function main() {
+    async function mainNormal() {
       const params = new URLSearchParams(window.location.search);
       const mode = params.get("mode") || "";
 
       document.getElementById("loading").style.display = "block";
 
-      const profile = await liff.getProfile();
-      const userId = profile.userId;
-
       const url = GAS_URL
-        + "?userId=" + encodeURIComponent(userId)
+        + "?userId=" + encodeURIComponent(globalUserId)
         + "&mode=" + encodeURIComponent(mode);
 
       const res = await fetch(url);
@@ -202,7 +211,151 @@
         alert("IDが取得できません");
       }
     }
-  </script>
 
+    // ▼ キャンセル一覧表示処理（旧cancel.jsの統合）
+    async function showCancelList() {
+      document.getElementById("cancel-main-view").style.display = "block";
+      document.getElementById("loading").style.display = "block";
+
+      try {
+        const res = await fetch(GAS_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            mode: "cancel",
+            userId: globalUserId
+          })
+        });
+
+        const reservations = await res.json();
+        document.getElementById("loading").style.display = "none";
+
+        const list = document.getElementById("list");
+
+        if (!reservations || reservations.length === 0) {
+          list.innerHTML = "<p style='font-size:40px; margin-top:40px;'>現在キャンセルできる予約はありません。</p>";
+          return;
+        }
+
+        list.innerHTML = `
+          <div style="margin-bottom: 40px;font-size: 40px;">
+            <h3 style="background:#7fffd4; padding:10px;">登校予約</h3>
+            <table border="1" style="width:100%; border-collapse:collapse;">  
+              <thead>
+                <tr style="background:#f8f8f8;">
+                     <th style="font-weight:300; font-size:30px;">✓</th>      
+                     <th style="font-weight:300; font-size:30px;">乗車日</th>
+                     <th style="font-weight:300; font-size:30px;">車校着</th>
+                     <th style="font-weight:300; font-size:30px;">乗車バス停</th>
+                </tr>
+              </thead>
+              <tbody id="toSchoolList"></tbody>
+            </table>
+          </div>
+
+          <div style="margin-bottom: 40px;font-size: 40px;">
+            <h3 style="background:#87cefa; padding:10px;">下校予約</h3>
+            <table border="1" style="width:100%; border-collapse:collapse;">
+              <thead>
+                <tr style="background:#f8f8f8;">
+                     <th style="font-weight:300; font-size:30px;">✓</th>      
+                     <th style="font-weight:300; font-size:30px;">乗車日</th>
+                     <th style="font-weight:300; font-size:30px;">車校発</th>
+                     <th style="font-weight:300; font-size:30px;">降車バス停</th>
+                </tr>
+              </thead>
+              <tbody id="fromSchoolList"></tbody>
+            </table>
+          </div>
+        `;
+
+        const toSchoolList = document.getElementById("toSchoolList");
+        const fromSchoolList = document.getElementById("fromSchoolList");
+
+        reservations.forEach((r) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td><input type="checkbox" class="chk" data-sheet="${r.sheetName}" data-row="${r.row}"></td>
+            <td>${r.rideDate}</td>
+            <td>${r.time || ""}</td>
+            <td>${r.place}</td>
+          `;
+
+          if (r.sheetName.includes("登校")) {
+            toSchoolList.appendChild(row);
+          } else if (r.sheetName.includes("下校")) {
+            fromSchoolList.appendChild(row);
+          }
+        });
+
+        document.getElementById("cancelBtn").style.display = "block";
+
+      } catch (err) {
+        document.getElementById("loading").style.display = "none";
+        alert("予約データの取得に失敗しました。");
+      }
+    }
+
+    // ★ チェックした行を赤くするイベント
+    document.addEventListener("change", (e) => {
+      if (e.target.classList.contains("chk")) {
+        const tr = e.target.closest("tr");
+        if (e.target.checked) {
+          tr.classList.add("tr-selected");
+        } else {
+          tr.classList.remove("tr-selected");
+        }
+      }
+    });
+
+    // ★ キャンセル実行処理
+    document.getElementById("cancelBtn").onclick = async () => {
+      const checks = document.querySelectorAll(".chk:checked");
+
+      if (checks.length === 0) {
+        alert("キャンセルする予約を選択してください。");
+        return;
+      }
+
+      document.getElementById("cancel-main-view").style.display = "none";
+      document.getElementById("loading").style.display = "block";
+
+      const targets = [];
+      checks.forEach(c => {
+        targets.push({
+          sheetName: c.dataset.sheet,
+          row: Number(c.dataset.row)
+        });
+      });
+
+      try {
+        const res = await fetch(GAS_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            mode: "cancelExec",
+            userId: globalUserId,
+            targets: targets
+          })
+        });
+
+        const json = await res.json();
+
+        if (json.success) {
+          alert("キャンセルが完了しました。");
+          liff.closeWindow();
+        } else {
+          alert("キャンセルに失敗しました。");
+          document.getElementById("cancel-main-view").style.display = "block";
+          document.getElementById("loading").style.display = "none";
+        }
+
+      } catch (err) {
+        alert("通信エラーが発生しました。");
+        document.getElementById("cancel-main-view").style.display = "block";
+        document.getElementById("loading").style.display = "none";
+      }
+    };
+  </script>
 </body>
 </html>
