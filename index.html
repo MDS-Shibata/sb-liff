@@ -82,7 +82,8 @@
   </style>
 </head>
 
-<body>
+<body style="display:none;">
+
 
   <div id="notice-normal" class="notice-modal">
     <div class="notice-content">
@@ -141,7 +142,7 @@ window.onload = async () => {
   // ★ modeがcancelの時はキャンセル用の注意事項を表示、それ以外は通常の注意事項を表示
  // ★ キャンセル画面へ行くときは index の中身を一切表示しない
   if (mode === "cancel") {
-    // 注意事項だけ表示
+    document.body.style.display = "none";
     document.getElementById("notice-cancel").style.display = "flex";
     return;  // ← ここで止める（body は表示しない）
   }
