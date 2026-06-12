@@ -230,6 +230,12 @@
         const reservations = await res.json();
         document.getElementById("loading").style.display = "none";
 
+        // 💡 ここを追加：GAS側でエラーが起きていた場合にポップアップで警告する
+        if (reservations.errorMessage) {
+          alert("GAS側のエラー: " + reservations.errorMessage);
+          return;
+        }
+
         const list = document.getElementById("list");
 
         if (!reservations || reservations.length === 0) {
@@ -292,7 +298,7 @@
 
       } catch (err) {
         document.getElementById("loading").style.display = "none";
-        alert("予約データの取得に失敗しました。");
+        alert("エラー詳細: " + err.message);
       }
     }
 
