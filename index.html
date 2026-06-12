@@ -142,7 +142,7 @@
 
   <script>
     const LIFF_ID = "2010140886-GXbWv0ge";
-    // 💡 ご自身で発行された最新のGASのURL（末尾が /exec のもの）をここに貼り付けてください
+    
     const GAS_URL = "https://script.google.com/macros/s/AKfycbxs1NBdbm_qy-TSyL4E5Nxev0UUur0rCpTO7Ns2p9B8HvJ5fHBKikZyAkS0EDm1Yzg7/exec";
     
     let globalUserId = "";
@@ -305,8 +305,14 @@
       }
     });
 
-    // ▼ キャンセル実行処理（headersを削除してCORSエラーを回避）
+    // ▼ キャンセル実行処理（確認ポップアップを追加）
     document.getElementById("cancelBtn").onclick = async () => {
+      // 💡 ボタンが押されたら、まず確認画面を出す
+      const consent = confirm("キャンセルします。よろしいですか？");
+      if (!consent) {
+        return; // 「キャンセル（いいえ）」が押されたら、ここで処理を終了して何もしない
+      }
+
       const checks = document.querySelectorAll(".chk:checked");
 
       if (checks.length === 0) {
@@ -352,6 +358,10 @@
         document.getElementById("loading").style.display = "none";
       }
     };
+
+  
+
+     
   </script>
 </body>
 </html>
