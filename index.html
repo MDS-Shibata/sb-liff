@@ -69,7 +69,7 @@
       width: 100%;
       font-size: 40px;
       font-weight: bold;
-      display: none; /* 初期は非表示 */
+      display: none;
     }  
     .chk {
       transform: scale(2.5);
@@ -142,18 +142,17 @@
 
   <script>
     const LIFF_ID = "2010140886-GXbWv0ge";
+    // 💡 ご自身で発行された最新のGASのURL（末尾が /exec のもの）をここに貼り付けてください
     const GAS_URL = "https://script.google.com/macros/s/AKfycbwo2xSDRejYYQwDIwEjFA4fmbDG7cMAMnFNCQwWJcJYBkvfxixo9xQ7Y9_bhLDG5SZ6/exec";
     
     let globalUserId = "";
 
-    // ▼ ページ読み込み時
     window.onload = async () => {
       const params = new URLSearchParams(window.location.search);
       const mode = params.get("mode") || "";
 
       document.body.style.display = "none";
 
-      // LIFF 初期化
       await liff.init({ liffId: LIFF_ID });
 
       if (!liff.isLoggedIn()) {
@@ -164,31 +163,26 @@
       const profile = await liff.getProfile();
       globalUserId = profile.userId;
 
-      // ★ キャンセルモード
       if (mode === "cancel") {
         document.body.style.display = "block";
         document.getElementById("notice-cancel").style.display = "flex";
         return;
       }
 
-      // ★ 通常予約モード
       document.body.style.display = "block";
       document.getElementById("notice-normal").style.display = "flex";
     };
 
-    // ▼ 通常予約の注意事項 → 通常のメイン処理実行
     document.getElementById("notice-ok").onclick = () => {
       document.getElementById("notice-normal").style.display = "none";
       mainNormal();
     };
 
-    // ▼ キャンセル注意事項 → そのままこの画面でキャンセル一覧を表示
     document.getElementById("notice-cancel-ok").onclick = () => {
       document.getElementById("notice-cancel").style.display = "none";
       showCancelList();
     };
 
-    // ▼ 通常予約のメイン処理
     async function mainNormal() {
       const params = new URLSearchParams(window.location.search);
       const mode = params.get("mode") || "";
@@ -212,7 +206,7 @@
       }
     }
 
-    // ▼ キャンセル一覧表示処理（旧cancel.jsの統合）
+    // ▼ キャンセル一覧表示処理（headersを削除してCORSエラーを回避）
     async function showCancelList() {
       document.getElementById("cancel-main-view").style.display = "block";
       document.getElementById("loading").style.display = "block";
@@ -220,7 +214,6 @@
       try {
         const res = await fetch(GAS_URL, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             mode: "cancel",
             userId: globalUserId
@@ -230,7 +223,6 @@
         const reservations = await res.json();
         document.getElementById("loading").style.display = "none";
 
-        // 💡 ここを追加：GAS側でエラーが起きていた場合にポップアップで警告する
         if (reservations.errorMessage) {
           alert("GAS側のエラー: " + reservations.errorMessage);
           return;
@@ -302,7 +294,6 @@
       }
     }
 
-    // ★ チェックした行を赤くするイベント
     document.addEventListener("change", (e) => {
       if (e.target.classList.contains("chk")) {
         const tr = e.target.closest("tr");
@@ -314,7 +305,7 @@
       }
     });
 
-    // ★ キャンセル実行処理
+    // ▼ キャンセル実行処理（headersを削除してCORSエラーを回避）
     document.getElementById("cancelBtn").onclick = async () => {
       const checks = document.querySelectorAll(".chk:checked");
 
@@ -337,7 +328,6 @@
       try {
         const res = await fetch(GAS_URL, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             mode: "cancelExec",
             userId: globalUserId,
