@@ -80,6 +80,34 @@
     .tr-selected {
       background-color: #ffdddd !important;
     }
+
+    /* 💡 新しく追加：「はい/いいえ」ポップアップ用のボタンデザイン */
+    .confirm-btn-container {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 40px;
+      gap: 20px;
+    }
+    .btn-yes {
+      flex: 1;
+      padding: 25px;
+      font-size: 38px;
+      background: #dc143c;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+    .btn-no {
+      flex: 1;
+      padding: 25px;
+      font-size: 38px;
+      background: #cccccc;
+      color: #333333;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+    }
   </style>
 </head>
 
@@ -127,6 +155,17 @@
     </div>
   </div>
 
+  <div id="custom-confirm-modal" class="notice-modal">
+    <div class="notice-content" style="text-align: center;">
+      <h2 style="font-size: 46px; margin-bottom: 20px; font-weight: bold;">確認</h2>
+      <p style="font-size: 38px; margin-bottom: 20px;">再度キャンセルします。<br>よろしいですか？</p>
+      <div class="confirm-btn-container">
+        <button id="confirm-no" class="btn-no">いいえ</button>
+        <button id="confirm-yes" class="btn-yes">はい</button>
+      </div>
+    </div>
+  </div>
+
   <div id="cancel-main-view" style="display: none; padding: 20px;">
     <h2 style="font-size: 60px; font-weight: bold; margin-bottom: 40px;">予約一覧</h2>
     <div id="list"></div>
@@ -142,7 +181,7 @@
 
   <script>
     const LIFF_ID = "2010140886-GXbWv0ge";
-    
+    // 💡 ご自身の最新のGAS URLになっていることをご確認ください
     const GAS_URL = "https://script.google.com/macros/s/AKfycbxs1NBdbm_qy-TSyL4E5Nxev0UUur0rCpTO7Ns2p9B8HvJ5fHBKikZyAkS0EDm1Yzg7/exec";
     
     let globalUserId = "";
@@ -206,7 +245,6 @@
       }
     }
 
-    // ▼ キャンセル一覧表示処理（headersを削除してCORSエラーを回避）
     async function showCancelList() {
       document.getElementById("cancel-main-view").style.display = "block";
       document.getElementById("loading").style.display = "block";
@@ -305,24 +343,29 @@
       }
     });
 
-    // ▼ キャンセル実行処理（確認ポップアップを追加）
-    document.getElementById("cancelBtn").onclick = async () => {
-      // 💡 ボタンが押されたら、まず確認画面を出す
-      const consent = confirm("キャンセルします。よろしいですか？");
-      if (!consent) {
-        return; // 「キャンセル（いいえ）」が押されたら、ここで処理を終了して何もしない
-      }
-
+    // 💡 変更：キャンセルボタンが押されたら「自作のポップアップ」をフワッと出す
+    document.getElementById("cancelBtn").onclick = () => {
       const checks = document.querySelectorAll(".chk:checked");
-
       if (checks.length === 0) {
         alert("キャンセルする予約を選択してください。");
         return;
       }
+      // 「はい/いいえ」の画面を表示
+      document.getElementById("custom-confirm-modal").style.display = "flex";
+    };
 
+    // 💡 新しく追加：「いいえ」が押されたらポップアップを閉じるだけ
+    document.getElementById("confirm-no").onclick = () => {
+      document.getElementById("custom-confirm-modal").style.display = "none";
+    };
+
+    // 💡 新しく追加：「はい」が押されたら実際のキャンセル処理へ進む
+    document.getElementById("confirm-yes").onclick = async () => {
+      document.getElementById("custom-confirm-modal").style.display = "none"; // ポップアップを閉じる
       document.getElementById("cancel-main-view").style.display = "none";
       document.getElementById("loading").style.display = "block";
 
+      const checks = document.querySelectorAll(".chk:checked");
       const targets = [];
       checks.forEach(c => {
         targets.push({
@@ -358,10 +401,6 @@
         document.getElementById("loading").style.display = "none";
       }
     };
-
-  
-
-     
   </script>
 </body>
 </html>
