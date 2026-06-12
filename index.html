@@ -10,7 +10,6 @@
       font-family: sans-serif;
       text-align: center;
       padding-top: 80px;
-      display: none; /* ← 最初は非表示（重要） */
     }
 
     #loading { display: none; }
@@ -61,7 +60,8 @@
   </style>
 </head>
 
-<body>
+<!-- ★ 最初は絶対に非表示にする（重要） -->
+<body style="display:none;">
 
   <!-- 通常予約の注意事項 -->
   <div id="notice-normal" class="notice-modal">
@@ -117,74 +117,4 @@
 
   <script>
     const LIFF_ID = "2010140886-GXbWv0ge";
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbxZwsUavWWwPV1Ql-eMxQ-SzeZQde6bo9JiRduEXP_qtJvDh9EUu4e7yi2PYJAxIPq9/exec";
-
-    // ▼ ページ読み込み時
-    window.onload = async () => {
-      const params = new URLSearchParams(window.location.search);
-      const mode = params.get("mode") || "";
-
-      // ★ キャンセルモード
-      if (mode === "cancel") {
-        document.getElementById("notice-cancel").style.display = "flex";
-        return; // ← ここで止める（index の中身は表示しない）
-      }
-
-      // ★ 通常予約モード
-      document.body.style.display = "block";
-      document.getElementById("notice-normal").style.display = "flex";
-
-      await liff.init({ liffId: LIFF_ID });
-
-      if (!liff.isLoggedIn()) {
-        liff.login();
-        return;
-      }
-    };
-
-    // ▼ 通常予約の注意事項 → main() 実行
-    document.getElementById("notice-ok").onclick = () => {
-      document.getElementById("notice-normal").style.display = "none";
-      main();
-    };
-
-    // ▼ キャンセル注意事項 → cancel.html へ
-    document.getElementById("notice-cancel-ok").onclick = () => {
-      window.location.href = "/cancel.html";
-    };
-
-    // ▼ 通常予約のメイン処理
-    async function main() {
-      const params = new URLSearchParams(window.location.search);
-      const mode = params.get("mode") || "";
-
-      document.getElementById("loading").style.display = "block";
-
-      if (!liff.isLoggedIn()) {
-        liff.login();
-        return;
-      }
-
-      const profile = await liff.getProfile();
-      const userId = profile.userId;
-
-      const url = GAS_URL
-        + "?userId=" + encodeURIComponent(userId)
-        + "&mode=" + encodeURIComponent(mode);
-
-      const res = await fetch(url);
-      const data = await res.json();
-
-      document.getElementById("loading").style.display = "none";
-
-      if (data.prefillUrl) {
-        liff.openWindow({ url: data.prefillUrl, external: true });
-        liff.closeWindow();
-      } else {
-        alert("IDが取得できません");
-      }
-    }
-  </script>
-
-</body>
-</html>
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbxZwsUav
