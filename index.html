@@ -152,10 +152,28 @@
       main();
     };
 
+    //6 12 18:07変更
+    
+    // ▼ キャンセル注意事項 → userId を引き継いで cancel.html へ
+document.getElementById("notice-cancel-ok").onclick = async () => {
+  try {
+    // 遷移前にプロファイルから userId を取得
+    const profile = await liff.getProfile();
+    const userId = profile.userId;
+    
+    // URLに userId を含めて遷移する
+    window.location.href = `cancel.html?userId=${encodeURIComponent(userId)}`;
+  } catch (error) {
+    console.error("ユーザーIDの取得に失敗しました", error);
+    // 万が一取得失敗した時の保険として、そのまま遷移
+    window.location.href = "cancel.html";
+  }
+};
+
     // ▼ キャンセル注意事項 → cancel.html へ
-    document.getElementById("notice-cancel-ok").onclick = () => {
+    /*document.getElementById("notice-cancel-ok").onclick = () => {
       window.location.href = "cancel.html";
-    };
+    };*/
 
     // ▼ 通常予約のメイン処理
     async function main() {
