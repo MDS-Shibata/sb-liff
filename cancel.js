@@ -2,6 +2,12 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycbxZwsUavWWwPV1Ql-eMxQ-S
 
 async function main() {
   await liff.init({ liffId: "2010140886-GXbWv0ge" });
+  
+//6.12 17:15追加
+   if (!liff.isLoggedIn()) {
+    liff.login();
+    return;
+  }
 
   // 1. URLの後ろについているパラメーター（?userId=xxx）を読み取る
   const params = new URLSearchParams(window.location.search);
