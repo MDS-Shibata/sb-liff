@@ -60,7 +60,7 @@
   </style>
 </head>
 
-<!-- ★ 最初は絶対に非表示にする（重要） -->
+<!-- ★ 最初は絶対に非表示にする -->
 <body style="display:none;">
 
   <!-- 通常予約の注意事項 -->
@@ -69,52 +69,3 @@
       <h2 style="text-align:center;">ご利用前の注意事項</h2>
       <p>・予約は乗車日の<span style="color:red;">前日午後３時まで</span> にお願いします</p>
       <p>・（月曜に乗車の時は土曜の午後３時まで）</p>
-      <p>・予約は必ず<span style="color:red;"> ご自身のスマホ</span>で行ってください</p>
-      <p>・初回予約時は教習生番号の打ち間違いに気をつけて下さい</p>
-      <p style="font-size: 26px; color: #007BFF;">※利用をやめる時は、必ずキャンセルを入れて下さい</p>
-
-      <button id="notice-ok" style="
-        margin-top: 20px;
-        width: 100%;
-        padding: 30px;
-        font-size: 40px;
-        background: #4CAF50;
-        color: white;
-        border: none;
-        border-radius: 8px;
-      ">OK</button>
-    </div>
-  </div>
-
-  <!-- キャンセル用の注意事項 -->
-  <div id="notice-cancel" class="notice-modal">
-    <div class="notice-content">
-      <h2 style="text-align:center;">キャンセル時の注意事項</h2>
-      <p>・キャンセルの手続きは乗車日の<span style="color:red;">前日午後３時まで</span>にお願いします</p>
-      <p>・必ず<span style="color:red;">ご自身のスマホにて</span>キャンセルしてください</p>
-      <p style="font-size: 26px; color: #007BFF;">※キャンセルせずに乗車されなかった場合、今後の利用をお断りする事があります</p>
-
-      <button id="notice-cancel-ok" style="
-        margin-top: 20px;
-        width: 100%;
-        padding: 30px;
-        font-size: 40px;
-        background: #f44336;
-        color: white;
-        border: none;
-        border-radius: 8px;
-      ">注意事項を確認して次へ</button>
-    </div>
-  </div>
-
-  <!-- ローディング -->
-  <div id="loading">
-    <div class="loader">
-      <span></span><span></span><span></span>
-    </div>
-    <p>読み込み中です…</p>
-  </div>
-
-  <script>
-    const LIFF_ID = "2010140886-GXbWv0ge";
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbxZwsUav
