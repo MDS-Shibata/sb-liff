@@ -1,13 +1,21 @@
 const GAS_URL = "https://script.google.com/macros/s/AKfycbxZwsUavWWwPV1Ql-eMxQ-SzeZQde6bo9JiRduEXP_qtJvDh9EUu4e7yi2PYJAxIPq9/exec";
-
+//6 12 17:26 変更
 async function main() {
-  await liff.init({ liffId: "2010140886-GXbWv0ge" });
+  try {
+    // ★ LIFF 初期化を確実に待つ
+    await liff.init({ liffId: "2010140886-GXbWv0ge" });
+/*async function main() {
+  await liff.init({ liffId: "2010140886-GXbWv0ge" });*/
   
 //6.12 17:15追加
    if (!liff.isLoggedIn()) {
     liff.login();
     return;
   }
+
+    //6 12 17:29 追加
+     // ★ LIFF 初期化が完了したことを確認
+    console.log("LIFF initialized successfully");
 
   // 1. URLの後ろについているパラメーター（?userId=xxx）を読み取る
   const params = new URLSearchParams(window.location.search);
@@ -19,6 +27,7 @@ async function main() {
     userId = profile.userId;
   }
 
+  
   // ★ デバッグログ（開発者ツールで確認用）
   console.log("userId=", userId);
   console.log("送信データ=", JSON.stringify({ mode: "cancel", userId: userId }));
