@@ -69,3 +69,121 @@
       <h2 style="text-align:center;">ご利用前の注意事項</h2>
       <p>・予約は乗車日の<span style="color:red;">前日午後３時まで</span> にお願いします</p>
       <p>・（月曜に乗車の時は土曜の午後３時まで）</p>
+      <p>・予約は必ず<span style="color:red;"> ご自身のスマホ</span>で行ってください</p>
+      <p>・初回予約時は教習生番号の打ち間違いに気をつけて下さい</p>
+      <p style="font-size: 26px; color: #007BFF;">※利用をやめる時は、必ずキャンセルを入れて下さい</p>
+
+      <button id="notice-ok" style="
+        margin-top: 20px;
+        width: 100%;
+        padding: 30px;
+        font-size: 40px;
+        background: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 8px;
+      ">OK</button>
+    </div>
+  </div>
+
+  <!-- キャンセル用の注意事項 -->
+  <div id="notice-cancel" class="notice-modal">
+    <div class="notice-content">
+      <h2 style="text-align:center;">キャンセル時の注意事項</h2>
+      <p>・キャンセルの手続きは乗車日の<span style="color:red;">前日午後３時まで</span>にお願いします</p>
+      <p>・必ず<span style="color:red;">ご自身のスマホにて</span>キャンセルしてください</p>
+      <p style="font-size: 26px; color: #007BFF;">※キャンセルせずに乗車されなかった場合、今後の利用をお断りする事があります</p>
+
+      <button id="notice-cancel-ok" style="
+        margin-top: 20px;
+        width: 100%;
+        padding: 30px;
+        font-size: 40px;
+        background: #f44336;
+        color: white;
+        border: none;
+        border-radius: 8px;
+      ">注意事項を確認して次へ</button>
+    </div>
+  </div>
+
+  <!-- ローディング -->
+  <div id="loading">
+    <div class="loader">
+      <span></span><span></span><span></span>
+    </div>
+    <p>読み込み中です…</p>
+  </div>
+
+  <script>
+    const LIFF_ID = "2010140886-GXbWv0ge";
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbxZwsUavWWwPV1Ql-eMxQ-SzeZQde6bo9JiRduEXP_qtJvDh9EUu4e7yi2PYJAxIPq9/exec";
+
+    // ▼ ページ読み込み時
+    window.onload = async () => {
+      const params = new URLSearchParams(window.location.search);
+      const mode = params.get("mode") || "";
+
+      // body は最初は非表示のまま
+      document.body.style.display = "none";
+
+      // ★ キャンセルでも必ず LIFF 初期化（白画面防止）
+      await liff.init({ liffId: LIFF_ID });
+
+      if (!liff.isLoggedIn()) {
+        liff.login();
+        return;
+      }
+
+      // ★ キャンセルモード
+      if (mode === "cancel") {
+        document.getElementById("notice-cancel").style.display = "flex";
+        return;
+      }
+
+      // ★ 通常予約モード
+      document.body.style.display = "block";
+      document.getElementById("notice-normal").style.display = "flex";
+    };
+
+    // ▼ 通常予約の注意事項 → main() 実行
+    document.getElementById("notice-ok").onclick = () => {
+      document.getElementById("notice-normal").style.display = "none";
+      main();
+    };
+
+    // ▼ キャンセル注意事項 → cancel.html へ
+    document.getElementById("notice-cancel-ok").onclick = () => {
+      window.location.href = "/cancel.html";
+    };
+
+    // ▼ 通常予約のメイン処理
+    async function main() {
+      const params = new URLSearchParams(window.location.search);
+      const mode = params.get("mode") || "";
+
+      document.getElementById("loading").style.display = "block";
+
+      const profile = await liff.getProfile();
+      const userId = profile.userId;
+
+      const url = GAS_URL
+        + "?userId=" + encodeURIComponent(userId)
+        + "&mode=" + encodeURIComponent(mode);
+
+      const res = await fetch(url);
+      const data = await res.json();
+
+      document.getElementById("loading").style.display = "none";
+
+      if (data.prefillUrl) {
+        liff.openWindow({ url: data.prefillUrl, external: true });
+        liff.closeWindow();
+      } else {
+        alert("IDが取得できません");
+      }
+    }
+  </script>
+
+</body>
+</html>
