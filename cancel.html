@@ -5,7 +5,6 @@
   <title>予約キャンセル</title>
 
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-  <script src="cancel.js"></script>
 
   <style>
     body { font-family: sans-serif; padding: 20px; text-align: center; padding-top: 80px; }
@@ -24,11 +23,10 @@
     /* ==================================================
        ▼ ローディング設定（最初は表示、JSで消去）
        ================================================== */
-  #loading {
-  display: block;
-  margin-top: 100px;   /* ローディング全体を下へ */
-}
-
+    #loading {
+      display: block;
+      margin-top: 100px;   /* ローディング全体を下へ */
+    }
 
     .loader {                                    
       display: flex;
@@ -61,38 +59,36 @@
     #loading p {
       font-size: 60px;
     }
-     /* ★ チェックボックスを大きくする */
-.chk {
-  transform: scale(2.5);
-  transform-origin: center;   /* ← 拡大の中心を中央に */
-  vertical-align: middle;     /* ← 行の中央に揃える */
-  margin-right: 20px;
-}
+    
+    /* ★ チェックボックスを大きくする */
+    .chk {
+      transform: scale(2.5);
+      transform-origin: center;   /* ← 拡大の中心を中央に */
+      vertical-align: middle;     /* ← 行の中央に揃える */
+      margin-right: 20px;
+    }
 
-  /* ★ ボタンを大きくする（ここに追加） */
-  .btn {
-    padding: 30px 20px;
-    background: #dc143c;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    margin-top: 40px;
-    width: 100%;
-    font-size: 40px;
-    font-weight: bold;
-  }  
+    /* ★ ボタンを大きくする */
+    .btn {
+      padding: 30px 20px;
+      background: #dc143c;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      margin-top: 40px;
+      width: 100%;
+      font-size: 40px;
+      font-weight: bold;
+    }  
 
-     /* ★ チェックした行を赤くする */
-  .tr-selected {
-    background-color: #ffdddd !important;
-  }
-
-</style>
-
-
-  
+    /* ★ チェックした行を赤くする */
+    .tr-selected {
+      background-color: #ffdddd !important;
+    }
+  </style>
 </head>
 <body>
+
 <h2 style="font-size: 60px; font-weight: bold; margin-bottom: 40px;">予約一覧</h2>
 
 <div id="loading">
@@ -106,5 +102,6 @@
 
 <button id="cancelBtn" class="btn">選択した予約をキャンセルする</button>
 
+<script src="cancel.js"></script>
 </body>
 </html>
