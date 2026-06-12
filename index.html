@@ -143,7 +143,7 @@ window.onload = async () => {
   if (mode === "cancel") {
     // 注意事項だけ表示
     document.getElementById("notice-cancel").style.display = "flex";
-    return; // ← ここで止める（body は表示しない）
+    // ← ここで止める（body は表示しない）
   }
 
   // ★ 通常予約のときだけ body を表示
