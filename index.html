@@ -228,9 +228,13 @@
 
       document.getElementById("loading").style.display = "block";
 
+
       const url = GAS_URL
-        + "?userId=" + encodeURIComponent(globalUserId)
-        + "&mode=" + encodeURIComponent(mode);
+  + "?userId=" + encodeURIComponent(globalUserId)
+  + "&mode=" + (mode === "school" || mode === "home" ? mode : "");
+        //const url = GAS_URL
+       // + "?userId=" + encodeURIComponent(globalUserId)
+       // + "&mode=" + encodeURIComponent(mode);
 
       const res = await fetch(url);
       const data = await res.json();
