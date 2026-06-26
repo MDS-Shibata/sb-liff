@@ -240,11 +240,11 @@
       document.getElementById("loading").style.display = "none";
 
       if (data.prefillUrl) {
-        liff.openWindow({ url: data.prefillUrl, external: true });
-        liff.closeWindow();
-      } else {
-        alert("IDが取得できません");
-      }
+  // external: false に変更してLINE内部で開く（ポップアップブロックを回避）
+  liff.openWindow({ url: data.prefillUrl, external: false });
+} else {
+  alert("IDが取得できません");
+}
     }
 
     async function showCancelList() {
