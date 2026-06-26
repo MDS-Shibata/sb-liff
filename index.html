@@ -221,36 +221,41 @@
       document.getElementById("notice-cancel").style.display = "none";
       showCancelList();
     };
-
-    async function mainNormal() {
+    
+     function mainNormal() {
       const params = new URLSearchParams(window.location.search);
       const mode = params.get("mode") || "";
 
       document.getElementById("loading").style.display = "block";
 
-
-
-        const url = GAS_URL
-       + "?userId=" + encodeURIComponent(globalUserId)
-      + "&mode=" + encodeURIComponent(mode);
-
-      const res = await fetch(url);
-
-      // 💡 応答が正常（200）でない場合のエラーキャッチ
-        if (!res.ok) {
-          throw new Error("GASからの応答が異常です (Status: " + res.status + ")");
+      // 💡 セキュリティ制限を完全に回避するためのコールバック関数を一時的に作る
+      const callbackName = "jsonp_callback_" + Math.round(100000 * Math.random());
+      window[callbackName] = function(data) {
+        document.getElementById("loading").style.display = "none";
+        if (data && data.prefillUrl) {
+          liff.openWindow({ url: data.prefillUrl, external: false });
+        } else {
+          alert("GASからURLが返されませんでした。データを確認してください。");
         }
-      
-      const data = await res.json();
+        // 後片付け
+        delete window[callbackName];
+        document.body.removeChild(script);
+      };
 
-      document.getElementById("loading").style.display = "none";
+      // URLの組み立て
+      const url = GAS_URL
+       + "?userId=" + encodeURIComponent(globalUserId)
+       + "&mode=" + encodeURIComponent(mode)
+       + "&callback=" + callbackName;
 
-      if (data.prefillUrl) {
-  // external: false に変更してLINE内部で開く（ポップアップブロックを回避）
-  liff.openWindow({ url: data.prefillUrl, external: false });
-} else {
-  alert("IDが取得できません");
-}
+      // 💡 fetchを使わず、scriptタグを使って通信することでCORS制限を100%回避します
+      const script = document.createElement("script");
+      script.src = url;
+      script.onerror = function() {
+        document.getElementById("loading").style.display = "none";
+        alert("GASとの通信に失敗しました。URLまたはデプロイ設定を確認してください。");
+      };
+      document.body.appendChild(script);
     }
 
     async function showCancelList() {
