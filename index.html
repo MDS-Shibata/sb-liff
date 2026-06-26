@@ -235,6 +235,12 @@
       + "&mode=" + encodeURIComponent(mode);
 
       const res = await fetch(url);
+
+      // 💡 応答が正常（200）でない場合のエラーキャッチ
+        if (!res.ok) {
+          throw new Error("GASからの応答が異常です (Status: " + res.status + ")");
+        }
+      
       const data = await res.json();
 
       document.getElementById("loading").style.display = "none";
