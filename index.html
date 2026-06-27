@@ -1,0 +1,433 @@
+<!DOCTYPE html>      
+<html lang="ja">       
+<head>                  
+  <meta charset="UTF-8"> 
+  <title>SB予約</title>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding-top: 80px;
+    }
+
+    #loading { display: none; }
+
+    .loader {                                    
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .loader span {
+      width: 30px;
+      height: 30px;
+      margin: 0 10px;
+      background: #333;
+      border-radius: 50%;
+      animation: bounce 0.6s infinite alternate;
+    }
+    .loader span:nth-child(2) { animation-delay: 0.2s; }
+    .loader span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes bounce {
+      from { transform: translateY(0); }
+      to   { transform: translateY(-30px); }
+    }
+
+    #loading p { font-size: 60px; }
+
+    /* 注意事項ポップアップ */
+    .notice-modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    .notice-content {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      width: 85%;
+      text-align: left;
+      font-size: 40px;
+      line-height: 1.6;
+    }
+
+    /* キャンセル画面用スタイル */
+    .btn {
+      padding: 30px 20px;
+      background: #dc143c;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      margin-top: 40px;
+      width: 100%;
+      font-size: 40px;
+      font-weight: bold;
+      display: none;
+    }  
+    .chk {
+      transform: scale(2.5);
+      transform-origin: center;
+      vertical-align: middle;
+      margin-right: 20px;
+    }
+    .tr-selected {
+      background-color: #ffdddd !important;
+    }
+
+    /* 「はい/いいえ」ポップアップ用のボタンデザイン */
+    .confirm-btn-container {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 40px;
+      gap: 20px;
+    }
+    .btn-yes {
+      flex: 1;
+      padding: 25px;
+      font-size: 38px;
+      background: #dc143c;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+    .btn-no {
+      flex: 1;
+      padding: 25px;
+      font-size: 38px;
+      background: #cccccc;
+      color: #333333;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body style="display:none;">
+
+  <div id="notice-normal" class="notice-modal">
+    <div class="notice-content">
+      <h2 style="text-align:center;">ご利用前の注意事項</h2>
+      <p>・予約は乗車日の<span style="color:red;">前日午後３時まで</span> にお願いします</p>
+      <p>・（月曜に乗車の時は土曜の午後３時まで）</p>
+      <p>・予約は必ず<span style="color:red;"> ご自身のスマホ</span>で行ってください</p>
+      <p>・初回予約時は教習生番号の打ち間違いに気をつけて下さい</p>
+      <p style="font-size: 26px; color: #007BFF;">※利用をやめる時は、必ずキャンセルを入れて下さい</p>
+
+      <button id="notice-ok" style="
+        margin-top: 20px;
+        width: 100%;
+        padding: 30px;
+        font-size: 40px;
+        background: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 8px;
+      ">OK</button>
+    </div>
+  </div>
+
+  <div id="notice-cancel" class="notice-modal">
+    <div class="notice-content">
+      <h2 style="text-align:center;">キャンセル時の注意事項</h2>
+      <p>・キャンセルの手続きは乗車日の<span style="color:red;">前日午後３時まで</span>にお願いします</p>
+      <p>・必ず<span style="color:red;">ご自身のスマホにて</span>キャンセルしてください</p>
+      <p style="font-size: 26px; color: #007BFF;">※キャンセルせずに乗車されなかった場合、今後の利用をお断りする事があります</p>
+
+      <button id="notice-cancel-ok" style="
+        margin-top: 20px;
+        width: 100%;
+        padding: 30px;
+        font-size: 40px;
+        background: #f44336;
+        color: white;
+        border: none;
+        border-radius: 8px;
+      ">注意事項を確認して次へ</button>
+    </div>
+  </div>
+
+  <div id="custom-confirm-modal" class="notice-modal">
+    <div class="notice-content" style="text-align: center;">
+      <h2 style="font-size: 46px; margin-bottom: 20px; font-weight: bold;">確認</h2>
+      <p style="font-size: 38px; margin-bottom: 20px;">選択した予約をキャンセルします。<br>よろしいですか？</p>
+      <div class="confirm-btn-container">
+        <button id="confirm-no" class="btn-no">いいえ</button>
+        <button id="confirm-yes" class="btn-yes">はい</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="cancel-main-view" style="display: none; padding: 20px;">
+    <h2 style="font-size: 60px; font-weight: bold; margin-bottom: 40px;">予約一覧</h2>
+    <div id="list"></div>
+    <button id="cancelBtn" class="btn">選択した予約をキャンセルする</button>
+  </div>
+
+  <div id="loading">
+    <div class="loader">
+      <span></span><span></span><span></span>
+    </div>
+    <p>読み込み中です…</p>
+  </div>
+
+  <script>
+    const LIFF_ID = "2010140886-GXbWv0ge";
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbwQgA3k6kEgPz8AEHB1q4rKBD-Ie-qW7eHhNcb60gsDY-GjkPh_sEW4d_Y-Fdw2PYvk/exec";
+    
+    let globalUserId = "";
+
+    window.onload = async () => {
+      const params = new URLSearchParams(window.location.search);
+      const mode = params.get("mode") || "";
+
+      document.body.style.display = "none";
+
+      await liff.init({ liffId: LIFF_ID });
+
+      if (!liff.isLoggedIn()) {
+        liff.login();
+        return;
+      }
+
+      const profile = await liff.getProfile();
+      globalUserId = profile.userId;
+
+      if (mode === "cancel") {
+        document.body.style.display = "block";
+        document.getElementById("notice-cancel").style.display = "flex";
+        return;
+      }
+
+      document.body.style.display = "block";
+      document.getElementById("notice-normal").style.display = "flex";
+    };
+
+    document.getElementById("notice-ok").onclick = () => {
+      document.getElementById("notice-normal").style.display = "none";
+      mainNormal();
+    };
+
+    document.getElementById("notice-cancel-ok").onclick = () => {
+      document.getElementById("notice-cancel").style.display = "none";
+      showCancelList();
+    };
+    
+    function mainNormal() {
+      const params = new URLSearchParams(window.location.search);
+      const mode = params.get("mode") || "";
+
+      document.getElementById("loading").style.display = "block";
+
+      const callbackName = "jsonp_callback_" + Math.round(100000 * Math.random());
+      
+      // 共通の後片付け処理
+      const cleanup = () => {
+        delete window[callbackName];
+        if (script.parentNode) {
+          script.parentNode.removeChild(script);
+        }
+      };
+
+      window[callbackName] = function(data) {
+        document.getElementById("loading").style.display = "none";
+        if (data && data.prefillUrl) {
+          liff.openWindow({ url: data.prefillUrl, external: false });
+        } else {
+          alert("GASからURLが返されませんでした。データを確認してください。");
+        }
+        cleanup(); // 後片付け
+      };
+
+      const url = GAS_URL
+       + "?userId=" + encodeURIComponent(globalUserId)
+       + "&mode=" + encodeURIComponent(mode)
+       + "&callback=" + callbackName;
+
+      const script = document.createElement("script");
+      script.src = url;
+      script.onerror = function() {
+        document.getElementById("loading").style.display = "none";
+        alert("GASとの通信に失敗しました。URLまたはデプロイ設定を確認してください。");
+        cleanup(); // エラー時も後片付け
+      };
+      document.body.appendChild(script);
+    }
+
+    async function showCancelList() {
+      document.getElementById("cancel-main-view").style.display = "block";
+      document.getElementById("loading").style.display = "block";
+
+      try {
+        const res = await fetch(GAS_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            mode: "cancel",
+            userId: globalUserId
+          })
+        });
+
+        const reservations = await res.json();
+        document.getElementById("loading").style.display = "none";
+
+        if (reservations.errorMessage) {
+          alert("GAS側のエラー: " + reservations.errorMessage);
+          return;
+        }
+
+        const list = document.getElementById("list");
+
+        if (!reservations || reservations.length === 0) {
+          list.innerHTML = "<p style='font-size:40px; margin-top:40px;'>現在キャンセルできる予約はありません。</p>";
+          return;
+        }
+
+        // 💡 改善：データを登校・下校にフィルタリングして、存在するテーブルだけを生成する
+        const toSchoolData = reservations.filter(r => r.sheetName && r.sheetName.includes("登校"));
+        const fromSchoolData = reservations.filter(r => r.sheetName && r.sheetName.includes("下校"));
+
+        let htmlContent = "";
+
+        // 登校予約テーブルの生成
+        if (toSchoolData.length > 0) {
+          htmlContent += `
+            <div style="margin-bottom: 40px;font-size: 40px;">
+              <h3 style="background:#7fffd4; padding:10px;">登校予約</h3>
+              <table border="1" style="width:100%; border-collapse:collapse;">  
+                <thead>
+                  <tr style="background:#f8f8f8;">
+                       <th style="font-weight:300; font-size:30px;">✓</th>      
+                       <th style="font-weight:300; font-size:30px;">乗車日</th>
+                       <th style="font-weight:300; font-size:30px;">車校着</th>
+                       <th style="font-weight:300; font-size:30px;">乗車バス停</th>
+                  </tr>
+                </thead>
+                <tbody>`;
+          
+          toSchoolData.forEach(r => {
+            htmlContent += `
+              <tr>
+                <td><input type="checkbox" class="chk" data-sheet="${r.sheetName}" data-row="${r.row}"></td>
+                <td>${r.rideDate}</td>
+                <td>${r.time || ""}</td>
+                <td>${r.place}</td>
+              </tr>`;
+          });
+          
+          htmlContent += `</tbody></table></div>`;
+        }
+
+        // 下校予約テーブルの生成
+        if (fromSchoolData.length > 0) {
+          htmlContent += `
+            <div style="margin-bottom: 40px;font-size: 40px;">
+              <h3 style="background:#87cefa; padding:10px;">下校予約</h3>
+              <table border="1" style="width:100%; border-collapse:collapse;">
+                <thead>
+                  <tr style="background:#f8f8f8;">
+                       <th style="font-weight:300; font-size:30px;">✓</th>      
+                       <th style="font-weight:300; font-size:30px;">乗車日</th>
+                       <th style="font-weight:300; font-size:30px;">車校発</th>
+                       <th style="font-weight:300; font-size:30px;">降車バス停</th>
+                  </tr>
+                </thead>
+                <tbody>`;
+          
+          fromSchoolData.forEach(r => {
+            htmlContent += `
+              <tr>
+                <td><input type="checkbox" class="chk" data-sheet="${r.sheetName}" data-row="${r.row}"></td>
+                <td>${r.rideDate}</td>
+                <td>${r.time || ""}</td>
+                <td>${r.place}</td>
+              </tr>`;
+          });
+          
+          htmlContent += `</tbody></table></div>`;
+        }
+
+        list.innerHTML = htmlContent;
+        document.getElementById("cancelBtn").style.display = "block";
+
+      } catch (err) {
+        document.getElementById("loading").style.display = "none";
+        alert("エラー詳細: " + err.message);
+      }
+    }
+
+    document.addEventListener("change", (e) => {
+      if (e.target.classList.contains("chk")) {
+        const tr = e.target.closest("tr");
+        if (e.target.checked) {
+          tr.classList.add("tr-selected");
+        } else {
+          tr.classList.remove("tr-selected");
+        }
+      }
+    });
+
+    document.getElementById("cancelBtn").onclick = () => {
+      const checks = document.querySelectorAll(".chk:checked");
+      if (checks.length === 0) {
+        alert("キャンセルする予約を選択してください。");
+        return;
+      }
+      document.getElementById("custom-confirm-modal").style.display = "flex";
+    };
+
+    document.getElementById("confirm-no").onclick = () => {
+      document.getElementById("custom-confirm-modal").style.display = "none";
+    };
+
+    document.getElementById("confirm-yes").onclick = async () => {
+      document.getElementById("custom-confirm-modal").style.display = "none";
+      document.getElementById("cancel-main-view").style.display = "none";
+      document.getElementById("loading").style.display = "block";
+
+      const checks = document.querySelectorAll(".chk:checked");
+      const targets = [];
+      checks.forEach(c => {
+        targets.push({
+          sheetName: c.dataset.sheet,
+          row: Number(c.dataset.row)
+        });
+      });
+
+      try {
+        const res = await fetch(GAS_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            mode: "cancelExec",
+            userId: globalUserId,
+            targets: targets
+          })
+        });
+
+        const json = await res.json();
+
+        if (json.success) {
+          alert("キャンセルが完了しました。");
+          liff.closeWindow();
+        } else {
+          alert("キャンセルに失敗しました。");
+          document.getElementById("cancel-main-view").style.display = "block";
+          document.getElementById("loading").style.display = "none";
+        }
+
+      } catch (err) {
+        alert("通信エラーが発生しました。");
+        document.getElementById("cancel-main-view").style.display = "block";
+        document.getElementById("loading").style.display = "none";
+      }
+    };
+  </script>
+</body>
+</html>
