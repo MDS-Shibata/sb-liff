@@ -181,7 +181,7 @@
 
   <script>
     const LIFF_ID = "2010140886-GXbWv0ge";
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbzJ9FEhBmcdcGoohPsVxnmfzaDTvFiLKJK8iyDpT79v7krxn-ycolWkboVWgPABUl6N/exec";
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbxmUGiEwmiwckJCtXUkmZ2QChZZk4oo1KekEJHAXbvx6Qj_dXVIz-g2Ngm3F2tfX1RN/exec";
     
     let globalUserId = "";
 
@@ -220,15 +220,44 @@
       document.getElementById("notice-cancel").style.display = "none";
       showCancelList();
     };
+
     
-    function mainNormal() {
+    async function mainNormal() {
       const params = new URLSearchParams(window.location.search);
       const mode = params.get("mode") || "";
 
       document.getElementById("loading").style.display = "block";
 
-      const callbackName = "jsonp_callback_" + Math.round(100000 * Math.random());
-      
+      try {
+        // 💡 トリッキーなscriptタグを廃止し、確実にブロックされないfetch(POST)へ変更
+        const res = await fetch(GAS_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            mode: mode,
+            userId: globalUserId
+          })
+        });
+
+        const data = await res.json();
+        document.getElementById("loading").style.display = "none";
+
+        if (data.error) {
+          alert("GAS側のエラー: " + data.error);
+          return;
+        }
+
+        if (data && data.prefillUrl) {
+          liff.openWindow({ url: data.prefillUrl, external: false });
+        } else {
+          alert("GASからURLが返されませんでした。データを確認してください。");
+        }
+
+      } catch (err) {
+        document.getElementById("loading").style.display = "none";
+        alert("GASとの通信に失敗しました。URLまたはデプロイ設定を確認してください。");
+      }
+    }
+   
       // 共通の後片付け処理
       const cleanup = () => {
         delete window[callbackName];
