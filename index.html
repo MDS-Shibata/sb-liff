@@ -221,7 +221,6 @@
       showCancelList();
     };
 
-    
     async function mainNormal() {
       const params = new URLSearchParams(window.location.search);
       const mode = params.get("mode") || "";
@@ -229,7 +228,6 @@
       document.getElementById("loading").style.display = "block";
 
       try {
-        // 💡 トリッキーなscriptタグを廃止し、確実にブロックされないfetch(POST)へ変更
         const res = await fetch(GAS_URL, {
           method: "POST",
           body: JSON.stringify({
@@ -256,39 +254,6 @@
         document.getElementById("loading").style.display = "none";
         alert("GASとの通信に失敗しました。URLまたはデプロイ設定を確認してください。");
       }
-    }
-   
-      // 共通の後片付け処理
-      const cleanup = () => {
-        delete window[callbackName];
-        if (script.parentNode) {
-          script.parentNode.removeChild(script);
-        }
-      };
-
-      window[callbackName] = function(data) {
-        document.getElementById("loading").style.display = "none";
-        if (data && data.prefillUrl) {
-          liff.openWindow({ url: data.prefillUrl, external: false });
-        } else {
-          alert("GASからURLが返されませんでした。データを確認してください。");
-        }
-        cleanup(); // 後片付け
-      };
-
-      const url = GAS_URL
-       + "?userId=" + encodeURIComponent(globalUserId)
-       + "&mode=" + encodeURIComponent(mode)
-       + "&callback=" + callbackName;
-
-      const script = document.createElement("script");
-      script.src = url;
-      script.onerror = function() {
-        document.getElementById("loading").style.display = "none";
-        alert("GASとの通信に失敗しました。URLまたはデプロイ設定を確認してください。");
-        cleanup(); // エラー時も後片付け
-      };
-      document.body.appendChild(script);
     }
 
     async function showCancelList() {
@@ -319,13 +284,11 @@
           return;
         }
 
-        // 💡 改善：データを登校・下校にフィルタリングして、存在するテーブルだけを生成する
         const toSchoolData = reservations.filter(r => r.sheetName && r.sheetName.includes("登校"));
         const fromSchoolData = reservations.filter(r => r.sheetName && r.sheetName.includes("下校"));
 
         let htmlContent = "";
 
-        // 登校予約テーブルの生成
         if (toSchoolData.length > 0) {
           htmlContent += `
             <div style="margin-bottom: 40px;font-size: 40px;">
@@ -354,7 +317,6 @@
           htmlContent += `</tbody></table></div>`;
         }
 
-        // 下校予約テーブルの生成
         if (fromSchoolData.length > 0) {
           htmlContent += `
             <div style="margin-bottom: 40px;font-size: 40px;">
