@@ -1,4 +1,4 @@
-const GAS_URL = "https://script.google.com/macros/s/AKfycbzjbsIiV1uCUmfmw6iUJKGF0MG1sAitl3MVwcl83aEkzqUloCq_Clcy_9oR0u591C5S/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbx1RaDKnLKvkEWnCf3yDaXoubdoGl6e_uHor5dDjfSMq1Oa_eJEtzea8RLhPYwTfAM/exec";
 
 async function main() {
   try {
